@@ -1,0 +1,29 @@
+type: AnalyzerGroup
+path: ulysse
+analyzers:  
+    battery:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Battery
+        find_and_remove_prefix: "mavros: Battery"
+
+    heartbeat:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Heartbeat
+        find_and_remove_prefix: "mavros: Heartbeat"
+    fcu:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: FCU connection
+        find_and_remove_prefix: "mavros: FCU connection"
+    time_sync:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Time Sync
+        find_and_remove_prefix: "mavros: Time Sync"
+    gps:
+        type: diagnostic_aggregator/DiscardAnalyzer
+        path: GPS
+        find_and_remove_prefix: "mavros: GPS"
+    system:
+        type: diagnostic_aggregator/DiscardAnalyzer
+        path: System
+        find_and_remove_prefix: "mavros: System"
+
