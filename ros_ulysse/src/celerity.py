@@ -19,8 +19,8 @@
 
 """
 
-__author__  = "Romain Schwab"
-__version__ = "1.2.0"
+__author__  = "Romain Schwab - Aurélien Grenier - Kévin Bedin"
+__version__ = "1.3.0"
 __date__    = "2019-05-27"
 __status__  = "Development" # "Prototype", "Development", or "Production"
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
 
     # Création d'un serveur UDP :
-    UDP_IP = "10.255.255.255"
+    UDP_IP = "10.0.1.111"
     UDP_PORT = 1040
     server = socket.socket(socket.AF_INET, # Internet
                                    socket.SOCK_DGRAM) # UDP
