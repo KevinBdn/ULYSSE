@@ -100,10 +100,11 @@ if __name__ == '__main__':
 
 
     # Création d'un serveur UDP :
-    UDP_IP = "10.0.1.111"
+    UDP_IP = "10.255.255.255"
     UDP_PORT = 1040
     server = socket.socket(socket.AF_INET, # Internet
                                    socket.SOCK_DGRAM) # UDP
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 # =============================================================================
 #     LECTURE DE LA TEMPERATURE
@@ -131,6 +132,7 @@ if __name__ == '__main__':
             time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") # UTC time
 
             # si la trame est OK :
+            print(len(temp_frame))
             if len(temp_frame) == LEN_TEMP_FRAME and temp_frame[0]==START_FRAME:
                 # conversion en float :
                 T = np.float(temp)
@@ -151,8 +153,8 @@ if __name__ == '__main__':
 
                 print("T={0:.2f}° S={1:.3f}psu SSV={2:.2f}m/s".format(Tm, Sm, ssv))
 
-                str_ssv = " {0:.3f}\r\n".format(ssv)
-#                print("SSV [m/s] : " + str_ssv)
+                str_ssv = " {0:.2f}\r\n".format(ssv)
+                print("SSV [m/s] : " + str_ssv)
 
                 log(time, T, S, ssv, file)
 
