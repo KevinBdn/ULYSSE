@@ -1,8 +1,13 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 """
-    The ``T2SV`` module
+__author__  = "Romain Schwab - Aurelien Grenier - Kevin Bedin"
+__version__ = "2.1.1"
+__date__    = "2019-05-27"
+__status__  = "Development"
+"""
+"""
+    The ''T2SV'' module
     ======================
 
     Use it to :
@@ -18,22 +23,21 @@
     ------------------------
 
 """
-
-__author__  = "Romain Schwab - Aurélien Grenier - Kévin Bedin"
-__version__ = "1.3.0"
-__date__    = "2019-05-27"
-__status__  = "Development" # "Prototype", "Development", or "Production"
-
+import rospy
+import rospkg
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
 import numpy as np
 import os
 import serial
 import socket
 
+
 from datetime import datetime
 
-PATH = '../LOGS/CELERITY/'
-
+PATH = rospkg.RosPack().get_path("ros_ulysse")+"/LOGS/R2SONIC/"
+BASENAME="celerity"
+DIAG_BASENAME="SSV -"
 
 def Cw(T,P):
     return (1402.388+5.0383*T-5.8109e-2*T**2+3.3432e-4*T**3-1.47797e-6*T**4+3.1419e-9*T**5) + \
@@ -67,31 +71,33 @@ def log(time, temp, sal, cel, f):
 def create_empty_logfiles(path):
 
     file_prefix = datetime.utcnow().strftime('%Y%m%d_%H%M%S_')
-    # Fichiers de sauvegarde des données
+    # Fichiers de sauvegarde des donnees
     f = open(path+file_prefix+'celerity_log.txt', 'a')
-    f.write('datetime, temperature [°], salinity [psu], sound speed velocity [m/s]\n')
+    f.write('datetime, temperature [C], salinity [psu], sound speed velocity [m/s]\n')
 
     return f
 
 
 if __name__ == '__main__':
 
+    rospy.init_node(BASENAME, anonymous=False, log_level=rospy.DEBUG)
+    diag=rospy.Publisher("diagnostics",DiagnosticArray, queue_size=5)
 
     P = 1
 
 #    S = 35
 
-    # Fichiers de sauvegarde des données
+    # Fichiers de sauvegarde des donnees
     file = create_empty_logfiles(PATH)
 
-    # On lit sur port série les trames du capteur de température
+    # On lit sur port serie les trames du capteur de temperature
     COM_IN = '/dev/ttyUSB0'
     BD_IN = 9600
-    TO_IN = 1 # timeout de 1sec pour le capteur de température
+    TO_IN = 1 # timeout de 1sec pour le capteur de temperature
     LEN_TEMP_FRAME = 81 # longueur des trames
-    START_FRAME = 37
+    START_FRAME = '%'#= 37 avant
 
-    # Connection au port série
+    # Connection au port serie
     try:
         portIn = serial.Serial(port=COM_IN, baudrate=BD_IN, timeout=1)
     except:
@@ -99,7 +105,7 @@ if __name__ == '__main__':
         portIn = serial.Serial(port=COM_IN, baudrate=BD_IN, timeout=1)
 
 
-    # Création d'un serveur UDP :
+    # Creation d'un serveur UDP :
     UDP_IP = "10.255.255.255"
     UDP_PORT = 1040
     server = socket.socket(socket.AF_INET, # Internet
@@ -112,10 +118,10 @@ if __name__ == '__main__':
 
     Tvec = []
     Svec = []
-    Ns = 5 # nombre d'échantillons pour le moyennage
+    Ns = 5 # nombre d'echantillons pour le moyennage
+    temp_frame = portIn.readline()#Premiere lecture pour remettre avoir une trame entiere
 
-
-    while 1: # lecture en continu
+    while not(rospy.is_shutdown()): # lecture en continu
         try:
             if os.stat(file.name).st_size >= 10e7:
                 file.close()
@@ -130,10 +136,10 @@ if __name__ == '__main__':
             sal = temp_frame[48:54].decode("utf-8") # extraction de T
 #            sal = 35
             time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") # UTC time
-
+            arr=DiagnosticArray()
             # si la trame est OK :
-            print(len(temp_frame))
             if len(temp_frame) == LEN_TEMP_FRAME and temp_frame[0]==START_FRAME:
+
                 # conversion en float :
                 T = np.float(temp)
                 S = max(np.float(sal),1e-10)
@@ -145,13 +151,13 @@ if __name__ == '__main__':
 # =============================================================================
 #     CALCUL DE LA CELERITE DU SON EN SURFACE
 # =============================================================================
-                # filtre médian :
+                # filtre median :
                 Tm = np.median(Tvec)
                 Sm = np.median(Svec)
 
                 ssv = celerity(Sm,Tm,P)
 
-                print("T={0:.2f}° S={1:.3f}psu SSV={2:.2f}m/s".format(Tm, Sm, ssv))
+                print("T={0:.2f}C S={1:.3f}psu SSV={2:.2f}m/s".format(Tm, Sm, ssv))
 
                 str_ssv = " {0:.2f}\r\n".format(ssv)
                 print("SSV [m/s] : " + str_ssv)
@@ -161,16 +167,24 @@ if __name__ == '__main__':
 # =============================================================================
 #     DIFFUSION DE LA CELERITE DE SURFACE PAR UDP
 # =============================================================================
-#               # On diffuse par protocole ethernet UDP la célérité de surface
+#               # On diffuse par protocole ethernet UDP la celerite de surface
                 server.sendto(str_ssv.encode('utf-8'), (UDP_IP, UDP_PORT))
+                arr.status.append(DiagnosticStatus(level=0,name=DIAG_BASENAME+" Value",message=str_ssv[0:-1]))
+                arr.header.stamp= rospy.Time.now()
+                diag.publish(arr)
             else:
-                print("Erreur dans le décodage de la trame : ",temp_frame)
+                erreur="Erreur dans le decodage de la trame : "+str(temp_frame)
+                print("Erreur dans le decodage de la trame : ",temp_frame)
+                arr.status.append(DiagnosticStatus(level=2,name=DIAG_BASENAME+" Error",message=erreur))
+                arr.header.stamp= rospy.Time.now()
+                diag.publish(arr)
+
 # =============================================================================
 #     SAUVEGARDE DES DONNEES (HEURE, TEMPERATURE, CELERITE)
 # =============================================================================
 
 
         except KeyboardInterrupt: # if user press CTRL+C, script cancels autoscan
-            print("Arrêt de l''émission des données de célérité de surface.")
+            print("Arret de l'emission des donnees de celerite de surface.")
             file.close()
             break
