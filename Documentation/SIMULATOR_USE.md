@@ -2,7 +2,7 @@ Installation et utilisation d'un simulateur
 ========================
 
 * **MAVproxy**: http://ardupilot.github.io/MAVProxy/html/index.html
-* 
+* **SITL Simulator**: http://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html
 
 Installation
 ------------
