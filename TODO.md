@@ -1,8 +1,6 @@
 TODO
 ====
 
-* Publier la célérité sur le RZO depuis NUC-17 (port 1040) voir Sensors de R2Sonic
-    * XXX.XX /r/n (manuel p.39)
 * Ajouter célérité dans le _rqt_robot_monitor_
 * Checker GPS
 * PPS sur Multifaisceau
@@ -16,17 +14,20 @@ Matériel nécessaire pour déplacements
 * Laptop Linux (⩾x1)
 	* ROS
 	* Mission Planner
+	* MAVExplorer.py
 * Wifi bullet (sol)
+* DLink (sol)
 * Rallonge (x5)
+* Batterie Extérieure DLink et Bullet
 * ULYSSE
-* Batteries (x6)
+* Batteries ULYSSE (x8)
 * Chargeur de batterie
 * Alimentation extérieure pour ULYSSE
 * Télécommande
 * Ecran (câble VGA/HDMI), souris, clavier (x1)
 * Cable éthernet (x2)
 * Outils:
-	* Clé pour démonter MBES
+	* Clé pour démonter MBES (13 et Allen)
 	* Scotch
 	* Velcro
 	* Câble électrique

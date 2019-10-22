@@ -20,3 +20,8 @@
     * _rqt_robot_monitor_ configurated
     * Temperature and conductivity sensor linked to this NUC (instead of to the Windows NUC)
     * **celerity.py** python script repaired and integrated to the NUC
+
+07/10/2019-11/10/2019
+-------------------------
+
+* First Guerledan week 

@@ -1,11 +1,14 @@
 type: AnalyzerGroup
-path: ulysse
+path: Ulysse
 analyzers:  
+    ssv:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: SSV
+        find_and_remove_prefix: "SSV -"
     battery:
         type: diagnostic_aggregator/GenericAnalyzer
         path: Battery
         find_and_remove_prefix: "mavros: Battery"
-
     heartbeat:
         type: diagnostic_aggregator/GenericAnalyzer
         path: Heartbeat
@@ -26,4 +29,6 @@ analyzers:
         type: diagnostic_aggregator/DiscardAnalyzer
         path: System
         find_and_remove_prefix: "mavros: System"
+
+
 
