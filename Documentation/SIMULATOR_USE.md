@@ -1,6 +1,9 @@
 Installation et utilisation d'un simulateur
 ========================
 
+* **MAVproxy**: http://ardupilot.github.io/MAVProxy/html/index.html
+* 
+
 Installation
 ------------
 
@@ -20,7 +23,7 @@ Installation
 
 * Lancer le Rover (APMrover2)
 
-		cd ardupilot/Tools/autotest
+		cd ~/ardupilot/Tools/autotest
 		./sim_vehicle.py -v APMrover2 --map --console
 
 * Lancer un roscore
@@ -30,6 +33,25 @@ Installation
 * Lancer mavros
 
 		roslaunch mavros apm.launch fcu_url:=udp://127.0.0.1:14550@
+		
+Utilisation MAVproxy
+----------------------
+
+* Lancer le drone ou le simulateur:
+
+		cd ~/ardupilot/Tools/autotest
+		./sim_vehicle.py -v APMrover2 #Pour simulateur de rover
+		
+* Lancer **mavproxy.py**:
+
+		cd ~/.local/bin/__pycache__/
+		mavproxy.py --master=udp:127.0.0.1:14550 --console --map #Lancer la map et la console
+
+* Ajouter une sortie udp:
+
+		$Console_mavproxy> output add IP_SIMU:14552 #Ouvre le port 14552 aux connexions mavlink
+		$Console_mavproxy> output #Liste les ports ouverts
+
 
 Navigation avec retour sur zone (ROS)
 ----------------------------------
@@ -40,7 +62,11 @@ Navigation avec retour sur zone (ROS)
 	
 * Armer 
 	
-		rosservice call /mavos/cmd/arming "value: true"
+		rosservice call /mavros/cmd/arming "value: true"
+		
+* Checker état actuel: 
+
+		rostopic echo /mavros/state
 	
 * Lancer la mission : mode Auto
 

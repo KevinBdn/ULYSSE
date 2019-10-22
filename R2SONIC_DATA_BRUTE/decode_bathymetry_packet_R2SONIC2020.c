@@ -252,7 +252,7 @@ void printBath(Bath* bath)
     printf("R0_SectionName:%.2s\n",bath->R0_SectionName);
     printf("R0_SectionSize:%u\n",bath->R0_SectionSize);
     printf("R0_ScalingFactor:%f\n",bath->R0_ScalingFactor);
-    printShortArray("R0_Range", bath->R0_Range, N);
+    //printShortArray("R0_Range", bath->R0_Range, N);
 
     printf("Ax_SectionName:%.2s\n",bath->Ax_SectionName);
     printf("Ax_SectionSize:%u\n",bath->Ax_SectionSize);
@@ -270,7 +270,7 @@ void printBath(Bath* bath)
     {
        //printShortArray("A2_AngleStep", bath->A2_AngleStep, N);
     }
-//    printf("I1_SectionName:%.2s\n",bath->I1_SectionName);
+    printf("I1_SectionName:%.2s\n",bath->I1_SectionName);
 //    printf("I1_SectionName:%c\n",((char)(bath->I1_SectionName)|65280));
 //    printf("I1_SectionName:%c\n",((char)(bath->I1_SectionName)|255));
 //    printf("I1_SectionSize:%u\n",bath->I1_SectionSize);
@@ -352,7 +352,7 @@ int readBath(Bath*  bath,FILE* data)
     }
 
     
-/*    fread(&bath->I1_SectionName,2*sizeof(char),1,data);*/
+    fread(&bath->I1_SectionName,2*sizeof(char),1,data);
 /*    fread(&bath->I1_SectionSize,sizeof(unsigned short),1,data);*/
 /*    fread(&bath->I1_ScalingFactor,sizeof(float),1,data);*/
 /*    bath->I1_Intensity = calloc(N,sizeof(unsigned short));*/
@@ -379,8 +379,8 @@ int main(void)
     FILE *data;
 
 //    data = fopen("trames_10_10_2019-14H1m53s.raw","rb");
-    data = fopen("trames_10_10_2019-15H5m59s_1er_patch_test.raw","rb");
-    
+ //   data = fopen("trames_10_10_2019-15H5m59s_1er_patch_test.raw","rb");
+    data = fopen("Wireshark/test.raw","rb");
     readBath(bath,data);
     swapBath(bath);
     printBath(bath);

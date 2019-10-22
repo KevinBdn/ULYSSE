@@ -1,7 +1,7 @@
 import struct
  
 f = open("trames_10_10_2019-15H5m59s_1er_patch_test.raw", "rb")
-
+f = open("Wireshark/test.raw", "rb")
 try:
     # > Big endian et < Little endian
     s = struct.Struct(">ccccIIccHccccccccccccccccccccccccIIIfffffffffHhfffffffIHHccHf")
