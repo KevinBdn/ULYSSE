@@ -13,7 +13,7 @@ Installation
 
 * Telecharger ardupilot
 
-		git clone ...
+		git clone https://github.com/ArduPilot/ardupilot.git
 
 * Intaller les simulateurs
 
