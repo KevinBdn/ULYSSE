@@ -1,37 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import rospy
 import rospkg
 from sensor_msgs.msg import BatteryState
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
+from mavros_msgs.msg import State as st
+from mavros_msgs.msg import WaypointList
+from battery import Battery
+from state import State
+from waypoints import Waypoint
 
-class Controller(object):
-    def __init__(self,pub_):
-        self.diagnostics=(DiagnosticArray())
-        self.pub=pub_
-
-    def battery_callback(self,data):
-        print(data.voltage)
-        print(data.current)
-        print(data.percentage)
-        self.diagnostics.status=[DiagnosticStatus(level=1,name="battery_level", message=data.voltage)]
-        self.pub.publish(self.diagnostics)
-        self.diagnostics.header.stamp=rospy.Time.now()
-        #voltage/current/charge/capacity/design_capacity
-        #percentage....
-        #more informations : http://docs.ros.org/melodic/api/sensor_msgs/html/msg/BatteryState.html
-
+class Controller(Battery, State, Waypoint):
+    def __init__(self, pub_batt_,pub_state_,pub_wpt_):
+        Battery.__init__(self,pub_batt_)
+        State.__init__(self,pub_state_)
+        Waypoint.__init__(self,pub_wpt_)
 
 
 
 if __name__=='__main__':
     try:
+        #Initialisation
         rospy.init_node("Controller")
-        pub = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
         rate=rospy.Rate(1)
-        while not rospy.is_shutdown():
-            controller = Controller(pub)
-            rospy.Subscriber("/mavros/battery",BatteryState,controller.battery_callback)
-            rate.sleep()
 
+        #Publisher Init
+        pub_battery = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        pub_state = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        pub_wpt = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        controller = Controller(pub_battery,pub_state,pub_wpt)
+
+        while not rospy.is_shutdown():
+
+
+            rospy.Subscriber("/mavros/battery",BatteryState,controller.battery_callback)
+            rospy.Subscriber("/mavros/state",st, controller.state_callback)
+            rospy.Subscriber("/mavros/mission/waypoints",WaypointList, controller.wpt_callback)
+
+
+            rate.sleep()
     except rospy.ROSInterruptException:
         pass
