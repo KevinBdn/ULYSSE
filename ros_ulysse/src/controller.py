@@ -2,35 +2,51 @@
 import rospy
 import rospkg
 from sensor_msgs.msg import BatteryState
+from mavros_msgs.msg import WaypointList,State
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
 class Controller(object):
-    def __init__(self,pub_):
-        self.diagnostics=(DiagnosticArray())
-        self.pub=pub_
+    def __init__(self,battery_min=20):
+        self.diag_pub=rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        self.battery_sub=rospy.Subscriber("/mavros/battery",BatteryState,self.battery_callback)
+        self.state_sub=rospy.Subscriber("/mavros/state",State,self.state_callback)
+        self.waypoints_sub=rospy.Subscriber("/mavros/mission/waypoints",WaypointList,self.waypoints_callback)
+        self.battery_min=battery_min
 
     def battery_callback(self,data):
-        print(data.voltage)
-        print(data.current)
-        print(data.percentage)
-        self.diagnostics.status=[DiagnosticStatus(level=1,name="battery_level", message=data.voltage)]
-        self.pub.publish(self.diagnostics)
-        self.diagnostics.header.stamp=rospy.Time.now()
+        diagnostics=DiagnosticArray()
+        diagnostics.status=[DiagnosticStatus(level=(data.voltage<self.battery_min),name="controller/battery_level/Niveau", message="{0:.2f}".format(data.voltage))]
+        diagnostics.header.stamp=rospy.Time.now()
+        self.diag_pub.publish(diagnostics)
         #voltage/current/charge/capacity/design_capacity
         #percentage....
         #more informations : http://docs.ros.org/melodic/api/sensor_msgs/html/msg/BatteryState.html
 
+    def state_callback(self,data):
+        diagnostics=DiagnosticArray()
+        diagnostics.status=[]
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/Mode", message=data.mode))
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/Armed", message=data.armed*"Armed"+(1-data.armed)*"Disarmed"))
+        diagnostics.header.stamp=rospy.Time.now()
+        self.diag_pub.publish(diagnostics)
 
+    def waypoints_callback(self,data):
+        print("Call")
+        n=len(data.waypoints)
+        diagnostics=DiagnosticArray()
+        diagnostics.status=[]
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Number", message=str(n)))
+        diagnostics.header.stamp=rospy.Time.now()
+        self.diag_pub.publish(diagnostics)
 
 
 if __name__=='__main__':
     try:
         rospy.init_node("Controller")
-        pub = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        controller=Controller(battery_min=12)
         rate=rospy.Rate(1)
         while not rospy.is_shutdown():
-            controller = Controller(pub)
-            rospy.Subscriber("/mavros/battery",BatteryState,controller.battery_callback)
+            rospy.spin()
             rate.sleep()
 
     except rospy.ROSInterruptException:
