@@ -11,7 +11,19 @@
 * **LOGS** created
 * **src/celerity.py** repaired and added
 
-07/10/2019-11/10/2019
--------------------------
+16/10/2019
+------------
+
 * **src/R2Sonic_acquisition.py** added
-* **LOGS/R2SONIC** created
+
+01/11/2019
+----------
+
+* **src/controller.py** added
+
+20/11/2019
+------------
+
+* **src/gps.py** added
+* **launch/ulysse_without_ros.launch** added
+* **cfg/analyzers_without_ros.yaml** added
