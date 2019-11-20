@@ -25,7 +25,7 @@ Directories
 
 * **src/** - Sources for python script / ROS nodes
 	* **celerity.py**: celerity computing from temperature and conductivity sensor linked in serial.
-	* **controler.py**: navigation algorithm using _mavros_
+	* **controller.py**: navigation algorithm using _mavros_
 	* **celerity.py**: compute SSV and broadcast it by UDP
 	* **gps.py**: compute the cap from u-blocks and broadcast it by UDP
 	* **R2Sonic_acquisition.py**: catch brut data (binary format) from R2Sonic and save it into log file.
