@@ -2,6 +2,7 @@
 
 from math import *
 from scipy import signal
+import pyproj
 
 radius_waypoint = 3
 
@@ -89,7 +90,31 @@ def find_trajectory(WP):
     return(Angle)
 
 def convert_GPS2L93(WP_GPS):
-    
+    """
+    Convertit toutes les coordonnées des waypoints en entrée en coordonnées Lambert 93.
+
+    Parameters:
+    WP_GPS:
+        list: liste des waypoints
+            i: index du waypoint
+            lat: latitude du waypoint
+            long: longitude du waypoint
+    Returns:
+    WP_L93:
+        list: liste des waypoints
+            i: index du waypoint
+            x: coordonnées horizontales du waypoint (L93)
+            y: coordonnées verticales du waypoint (L93)
+    """
+    # Define a projection with Proj4 notation, in this case we focus on France, correspond to Lambert 93 projection
+    isn2004=pyproj.Proj("+init=EPSG:2154")
+
+    WP_L93 = []
+    for wp in WP_GPS:
+        lat,long = wp[1],wp[2]
+        x,y = isn2004(lat,long)
+        WP_L93.append([wp[0],x,y])
+
     return(WP_L93)
 
 def giration(WP):
@@ -112,12 +137,16 @@ def giration(WP):
     WP_entree,WP_sortie = WP[1],WP[2]
     d = sqrt((WP_entree[1]-WP_sortie[1])**2+(WP_entree[2]-WP_sortie[2])**2) # ecart dans la giration entre deux WP
     r = d/2+radius_waypoint
-
+    print(d)
+    WP_giration = []
     return(WP_giration)
 
 if __name__ == '__main__':
     file_name = "survey2.waypoints"
     waypoints = parse(file_name)
+    waypoints_l93 = convert_GPS2L93(waypoints)
     angles = find_trajectory(waypoints)
     for i in range(len(angles)):
         print(i,angles[i])
+
+    giration([waypoints_l93[1],waypoints_l93[3],waypoints_l93[4],waypoints_l93[4]])
