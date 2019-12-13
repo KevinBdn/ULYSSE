@@ -15,7 +15,7 @@ Composé de :
 * **Header**: 2 octets - (**0xB5 0x62**)
 * **Class**: 1 octet - (**0x01**)
 * **ID**: 1 octet - (**0x3C**)
-* **Length**: 2 octets - taille en octets (**0x40**=64 et **0x00**)
+* **Length**: 2 octets - taille en octets en little endian (**0x40 0x00**=64)
 * **Payload** (information utile): voir ci dessous
 * **Checksum**: 2 octets
 
@@ -44,3 +44,24 @@ _N.B. : un 2 hexa = 16² = 2⁸ = 1 octet_
  
  L'utilité d'avoir la distance du vecteur formé par les deux GPS permet de savoir si les mesures sont aberrantes ou non, car nous connaissons exactement cette valeur.
  
+ 
+ **Checksum**: 
+
+* **CK_A**: Il s'agit de la somme de tous les octets de **Class** (inclus) à **Checksum** exclut combiné avec un &0xFF (afin de n'avoir que 1 octet): `(Class+Id+Length+Payload)&0xFF`.
+
+ Voir p.31 de la doc:
+ 
+	CK_A,CK_B = 0, 0
+	for i in range(len(packet)):
+	  CK_A = CK_A + packet[i]
+	  CK_B = CK_B + CK_A
+
+	# ensure unsigned byte range
+	CK_A = CK_A & 0xFF
+	CK_B = CK_B & 0xFF
+	
+NB: Le CK_A fonctionne bien mais pas le CK_B ... voir code `test_checksum.py`
+
+Norme Checksum RFC 1145: https://www.ietf.org/rfc/rfc1145.txt
+
+	
