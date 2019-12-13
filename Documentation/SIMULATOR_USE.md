@@ -3,6 +3,7 @@ Installation et utilisation d'un simulateur
 
 * **MAVproxy**: http://ardupilot.github.io/MAVProxy/html/index.html
 * **SITL Simulator**: http://ardupilot.org/dev/docs/sitl-simulator-software-in-the-loop.html
+* **SITL Test**: https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html
 
 Installation
 ------------
@@ -41,6 +42,18 @@ Utilisation MAVproxy
 
 		cd ~/ardupilot/Tools/autotest
 		./sim_vehicle.py -v APMrover2 #Pour simulateur de rover
+
+* Changer point de départ: Ajouter dans la position dans `ardupilot/Tools/autotest/locations.txt` et utiliser l'option `-L NAME`:
+
+	NAME=latitude,longitude,absolute-altitude,heading
+	
+		Guerledan= 48.199163,-3.014780,0,-90
+
+* Pour changer l'aspect en un bateau on utilise `-f sailboat-motor` (f pour  frame). On utilise alors au final la commande:
+
+		./sim_vehicle.py -v APMrover2 -f sailboat-motor -L Guerledan
+
+	Remarque: cela rend le bateau très sensible au vent (à changer dans les parmètres de configuration de la voile etc ...). Pour lister les frames: `./sim_vehicle --help`
 		
 * Lancer **mavproxy.py**:
 
@@ -51,6 +64,7 @@ Utilisation MAVproxy
 
 		$Console_mavproxy> output add IP_SIMU:14552 #Ouvre le port 14552 aux connexions mavlink
 		$Console_mavproxy> output #Liste les ports ouverts
+
 
 
 Navigation avec retour sur zone (ROS)
