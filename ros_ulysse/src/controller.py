@@ -12,6 +12,7 @@ from battery import Battery
 from state import State
 from waypoints import Waypoint
 import mavros_msgs.srv
+
 class Controller(object):
     def __init__(self,battery_min=20):
         self.diag_pub = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
@@ -28,7 +29,7 @@ class Controller(object):
 
     def battery_callback(self,data):
         diagnostics=DiagnosticArray()
-        diagnostics.status=[DiagnosticStatus(level=(data.voltage<self.battery_min),name="controller/battery_level/Niveau", message="{0:.2f}".format(data.voltage))]
+        diagnostics.status=[DiagnosticStatus(level=(data.voltage<self.battery_min),name="controller/battery_level/level", message="{0:.2f}".format(data.voltage))]
         diagnostics.header.stamp=rospy.Time.now()
         self.diag_pub.publish(diagnostics)
         #voltage/current/charge/capacity/design_capacity
@@ -38,8 +39,8 @@ class Controller(object):
     def state_callback(self,data):
         diagnostics=DiagnosticArray()
         diagnostics.status=[]
-        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/Mode", message=data.mode))
-        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/Armed", message=data.armed*"Armed"+(1-data.armed)*"Disarmed"))
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/mode", message=data.mode))
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/state/armed", message=data.armed*"Armed"+(1-data.armed)*"Disarmed"))
         diagnostics.header.stamp=rospy.Time.now()
         self.diag_pub.publish(diagnostics)
 
@@ -51,10 +52,10 @@ class Controller(object):
         self.current_wp = data.current_seq
         diagnostics=DiagnosticArray()
         diagnostics.status=[]
-        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Number", message=str(n)))
+        diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/number", message=str(n)))
         diagnostics.header.stamp=rospy.Time.now()
         self.diag_pub.publish(diagnostics)
-        self.fsm()
+        self.wpt_chang()
 
 
         # Waypoint Data
@@ -64,14 +65,19 @@ class Controller(object):
     def warning_callback (self, data):
         self.warning = data.data
         rospy.logwarn("Warning, type" + str(self.warning))
-        self.wp_enregistre = self.current_wp
-        now = rospy.get_rostime()
-        self.warning_info_list.append((now,self.warning,(self.wp_enregistre-1, self.wp_enregistre)))
-        print(self.warning_info_list)
+        if (self.warning == 1):
+            self.wp_enregistre = self.current_wp
+            now = rospy.get_rostime()
+            self.warning_info_list.append((now,self.warning,(self.wp_enregistre-1, self.wp_enregistre)))
+            #warning_info_list((time,type_warning,(wp_pre_l'erreur,wp_suivant_l'erreur))
+            rospy.logwarn("Waypoint enregistre :" + str(self.wp_enregistre))
+        elif (self.warning == -1):
+            rospy.logwarn("Mode Loiter activé")
+            self.stop()
 
-        rospy.logwarn("Waypoint enregistre :" + str(self.wp_enregistre))
 
-    def fsm(self):
+
+    def wpt_chang(self):
             if (self.warning == 1 ):
                 if (self.current_wp == (self.wp_enregistre + 1)):
                     rospy.wait_for_service('/mavros/mission/set_current') # timeout ?
@@ -84,6 +90,18 @@ class Controller(object):
                         rospy.logwarn("Erreur")
 
 
+    def stop(self):
+        rospy.wait_for_service('/mavros/set_mode') # timeout ?
+        try:
+            mode = rospy.ServiceProxy('/mavros/set_mode', mavros_msgs.srv.SetMode)
+            mode_ = mode(custom_mode = "HOLD")
+            rospy.logwarn("Mode HOLD activé")
+            self.warning = 0.0
+        except rospy.ServiceException, e:
+            rospy.logwarn("Erreur")
+
+              # rosservice call /mavros/set_mode  "base_mode: 0
+              # custom_mode: 'HOLD'"
 
 
 if __name__=='__main__':
