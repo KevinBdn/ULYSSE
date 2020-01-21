@@ -62,7 +62,7 @@ Etapes
 	
 			$ roslaunch ros_ulysse ulysse.launch
 			
-Autre
+Autre - Inversement
 -----
 
 On peut inversement lancer **MAVproxy** sur le NUC-17:
@@ -81,12 +81,20 @@ On peut inversement lancer **MAVproxy** sur le NUC-17:
 	
 	
 			<launch>
-			  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator"> 
+			  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
 			    <rosparam file="$(find ros_ulysse)/cfg/analyzers.yaml" command="load" />
 			  </node>
+
+			  <node pkg="ros_ulysse" type="controller.py" name="controller" />
 			  <node pkg="ros_ulysse" type="celerity.py" name="celerity"/> 
-			  <arg name="fcu_url" default="udp://127.0.0.1:14551@14555" /> # "tcp://10.0.1.20:4003" pour la connection directe à l'autopilote
-			  <include file="$(find mavros)/launch/apm.launch">
+			  <node pkg="ros_ulysse" type="gps.py" name="gps"/> 
+
+
+			<!-- "tcp://10.0.1.20:4003" pour la connection directe à l'autopilote; udp://10.0.1.111:14552@14555 pour mavproxy -->
+			<!--Mavproxy : $ mavproxy.py -master=tcp:10.0.1.20:4003 -out=127.0.0.1:14551 -out=10.0.1.88:14552-->
+
+			    <arg name="fcu_url" default="udp://127.0.0.1:14551@14555" />
+			  <include file="$(find mavros)/launch/apm2.launch">
 			    <arg name="fcu_url" value="$(arg fcu_url)" />
 			  </include>
 			</launch>
@@ -107,4 +115,15 @@ On peut inversement lancer **MAVproxy** sur le NUC-17:
 	
 			$ roslaunch mavros apm2.launch fcu_url:="udp://10.0.1.88:14552@14555"			
 		
+	OU 
 	
+	* Lancer Apmplanner:
+	
+			$ apmplanner2
+			-----------------------
+			Communication -> Add Link -> UDP
+				UDP Port : 14552
+				Add IP -> 
+					Host (hostname:port):
+						10.0.1.88:14555
+		

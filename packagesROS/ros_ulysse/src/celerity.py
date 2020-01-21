@@ -35,7 +35,7 @@ import socket
 
 from datetime import datetime
 
-PATH = rospkg.RosPack().get_path("ros_ulysse")+"/LOGS/R2SONIC/"
+PATH = rospkg.RosPack().get_path("ros_ulysse")+"/LOGS/CELERITY/"
 BASENAME="celerity"
 DIAG_BASENAME="SSV -"
 
