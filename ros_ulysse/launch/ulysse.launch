@@ -1,6 +1,0 @@
-<launch>
-  <node pkg="ros_ulysse" type="controller.py" name="controller" />
-  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
-    <rosparam file="$(find ros_ulysse)/cfg/analyzers.yaml" command="load" />
-  </node>
-</launch>
