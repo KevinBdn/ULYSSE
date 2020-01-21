@@ -1,0 +1,12 @@
+<launch>
+  <node pkg="ros_ulysse" type="controller.py" name="controller" />
+  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
+    <rosparam file="$(find ros_ulysse)/cfg/analyzers.yaml" command="load" />
+  </node>
+  <node pkg="ros_ulysse" type="celerity.py" name="celerity"/> 
+  <node pkg="ros_ulysse" type="gps.py" name="gps"/> 
+  <arg name="fcu_url" default="tcp://10.0.1.20:4003" />
+  <include file="$(find mavros)/launch/apm2.launch">
+    <arg name="fcu_url" value="$(arg fcu_url)" />
+  </include>
+</launch>
