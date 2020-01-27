@@ -64,10 +64,3 @@ NB: Le CK_A fonctionne bien mais pas le CK_B ... voir code `test_checksum.py`
 
 Norme Checksum RFC 1145: https://www.ietf.org/rfc/rfc1145.txt
 
-RTKlib
--------
-
-Commande à vérifier:
-
-	str2str -in ntrip://ENSTABRE:03071508@78.24.131.136:2101/MAC30 -out serial://ttyACM1:115200:8:N:1:off#rtmc3
- 
