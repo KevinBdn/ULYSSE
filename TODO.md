@@ -1,9 +1,6 @@
 TODO
 ====
 
-* Ajouter célérité dans le _rqt_robot_monitor_
-* Checker GPS
-* PPS sur Multifaisceau
  
 Matériel nécessaire pour déplacements
 --------------------------------------------
