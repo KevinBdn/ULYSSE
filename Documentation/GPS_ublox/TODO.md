@@ -64,4 +64,3 @@ NB: Le CK_A fonctionne bien mais pas le CK_B ... voir code `test_checksum.py`
 
 Norme Checksum RFC 1145: https://www.ietf.org/rfc/rfc1145.txt
 
-	
