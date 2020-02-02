@@ -1,8 +1,0 @@
-prefix=/home/cambernard/workspaceUlysse/devel
-
-Name: ulysse_tf
-Description: Description of ulysse_tf
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/cambernard/workspaceUlysse/devel/lib 
-Requires: 
