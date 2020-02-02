@@ -1,8 +1,0 @@
-prefix=/home/cambernard/workspaceUlysse/install
-
-Name: ssv_computing
-Description: Description of ssv_computing
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/cambernard/workspaceUlysse/install/lib 
-Requires: 

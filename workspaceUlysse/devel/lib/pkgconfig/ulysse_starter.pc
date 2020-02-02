@@ -1,8 +1,0 @@
-prefix=/home/cambernard/workspaceUlysse/devel
-
-Name: ulysse_starter
-Description: Description of ulysse_starter
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/cambernard/workspaceUlysse/devel/lib 
-Requires: 
