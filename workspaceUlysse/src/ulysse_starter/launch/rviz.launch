@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="rvizconf" default="$(find ulysse_starter)/cfg/ulysse.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconf)"/>
+
+</launch>

@@ -1,0 +1,8 @@
+prefix=/home/cambernard/workspaceUlysse/devel
+
+Name: ublox_gps
+Description: Description of ublox_gps
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cambernard/workspaceUlysse/devel/lib 
+Requires: 

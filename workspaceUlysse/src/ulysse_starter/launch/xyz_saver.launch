@@ -1,0 +1,11 @@
+<launch>
+
+<!--    MBES -->
+    <include file="$(find ulysse_starter)/launch/mbes.launch"/>
+
+<!--    IMU  -->
+    <include file="$(find ulysse_starter)/launch/imu.launch"/>
+
+<!--    XVZ saver-->
+  <node pkg="mbes" type="xyz_saver.py" name="xyz_saver"/> 
+</launch>

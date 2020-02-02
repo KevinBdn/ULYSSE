@@ -1,0 +1,8 @@
+prefix=/home/cambernard/workspaceUlysse/install
+
+Name: sbg_driver
+Description: Description of sbg_driver
+Version: 2.0.0
+Cflags: -I/home/cambernard/workspaceUlysse/install/include
+Libs: -L/home/cambernard/workspaceUlysse/install/lib 
+Requires: 

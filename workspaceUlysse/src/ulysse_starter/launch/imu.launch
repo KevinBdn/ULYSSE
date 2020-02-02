@@ -1,0 +1,9 @@
+<launch>
+
+<!--    SBG driver -->
+    <include file="$(find sbg_driver)/launch/examples/sbg_ekinox.launch"/>
+
+<!-- SBG topics to Odemetry topic && TF through Geonav_transform node-->
+    <include file="$(find ulysse_tf)/launch/sbg_geonav_transform.launch"/>
+
+</launch>
