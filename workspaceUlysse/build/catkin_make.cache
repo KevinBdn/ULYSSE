@@ -1,0 +1,2 @@
+geonav_transform:mbes:sbg_ros_driver:ssv_computing:ublox_gps:ulysse_navigation:ulysse_starter:ulysse_tf
+-DCATKIN_DEVEL_PREFIX=/home/cambernard/workspaceUlysse/devel -DCMAKE_INSTALL_PREFIX=/home/cambernard/workspaceUlysse/install -G Unix Makefiles

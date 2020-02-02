@@ -1,0 +1,8 @@
+prefix=/home/cambernard/workspaceUlysse/install
+
+Name: ulysse_navigation
+Description: Description of ulysse_navigation
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cambernard/workspaceUlysse/install/lib 
+Requires: 
