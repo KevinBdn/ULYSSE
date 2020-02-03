@@ -7,7 +7,7 @@ GPS u-blox
 En utilisant deux de ces GPS on peut avoir le cap de manière automatique. Le premier GPS fournit la position (trames NMEA) le seond fournit alors le cap (trames UBX-NAV-RELPOSNED) sous la forme d'un message binaire.
 
 
-Message binaire
+Message binaire - little-endian
 -------
 
 Composé de :
