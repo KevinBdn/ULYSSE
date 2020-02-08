@@ -27,6 +27,7 @@ class Controller(object):
         self.wp_enregistre  = 0
         self.wp_number = 0
         self.current_wp = 0
+        self.last_waypoint = 0
 
 
         self.arming="Disarmed" #Armed or Disarmed
@@ -56,6 +57,8 @@ class Controller(object):
         rospy.logwarn("Changement de waypoint")
         rospy.logwarn("Nouveau waypoint :" + str(data.current_seq))
         self.wp_number=len(data.waypoints)
+        if data.waypoints[self.current_wp].param1 == 0:
+            self.last_waypoint = self.current_wp
         self.current_wp = data.current_seq
         diagnostics=DiagnosticArray()
         diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Number", message=str(self.wp_number)))
@@ -90,7 +93,7 @@ class Controller(object):
                     rospy.wait_for_service('/mavros/mission/set_current') # timeout ?
                     try:
                         current_wpt = rospy.ServiceProxy('/mavros/mission/set_current', mavros_msgs.srv.WaypointSetCurrent)
-                        wpt = current_wpt(wp_seq = (self.wp_enregistre-1))
+                        wpt = current_wpt(wp_seq = (self.last_waypoint))
                         rospy.logwarn("Nouveau waypoint de correction :" + str(self.wp_enregistre-1))
                         self.warning = 0.0
                     except rospy.ServiceException, e:
