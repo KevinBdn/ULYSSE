@@ -3,7 +3,9 @@
 <!--    MBES raw data to topics-->
   <node pkg="mbes" type="mbes_to_ros_from_socket.py" name="r2sonic"/>
 
-<!--    MBES to IMU and BOAT Marker -->
-    <node pkg="ulysse_tf" type="tf_mbes.py" name="tf_mbes" />
+<!--    TF : MBES to IMU -->
+  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" args="0.2172 -0.0205 -0.1768 0 0 0 1 imu mbes 1" />
 
+<!--    SSV computing-->
+  <node pkg="ssv_computing" type="celerity.py" name="celerity"/> 
 </launch>

@@ -15,8 +15,8 @@ from pointComputing import *
 
 PATH = rospkg.RosPack().get_path('mbes')
 
-raw_data_file="test.raw"
-svp_data_file="1_2019-10-09_12-49-25_Up.asvp"
+raw_data_file="trames_6_2_2020-17H35m20s_EQUI_ANGLE.raw"
+svp_data_file="1_2020-02-03_14-59-35_Up.asvp"
 
 
 
@@ -27,12 +27,13 @@ if __name__ == '__main__':
     data_pub = rospy.Publisher("/ulysse/mbes/data",PointCloud, queue_size=50)
 
 
-    f = open(PATH+"/RESOURCES/"+raw_data_file, "rb")
+    f = open(PATH+"/LOGS/R2SONIC/"+raw_data_file, "rb")
     svp = PATH+"/RESOURCES/SVP/"+svp_data_file
     svpArray = np.asarray(np.loadtxt(svp, delimiter=' ', skiprows = 1))
     
     #Construction d'un profil de celerite standard
-    refSvp = cleanSVP(svpArray)
+#    refSvp = cleanSVP(svpArray)
+    refSvp = svpArray
     #print(refSvp)
     v=1474.2
 
@@ -44,7 +45,7 @@ if __name__ == '__main__':
             angles,times,dateS,dateNS,pingNum=readMBESdata(f)
             P=np.array([0,0,0])#Position du bateau (x,y,z)  [GPS]
             Vr=np.array([0.01,0.1,0.1])#Vecteur rotation (Rx,Ry,Rz) angle d'euler [IMU]
-            if angles is not None:
+            if angles is not None and angles!=[]:
                 X,Y=[],[]
                 X_b,Y_b=[],[]
                 Cloud=PointCloud()
@@ -69,8 +70,9 @@ if __name__ == '__main__':
 #                plt.plot(X_b,Y_b,'o')
 #                plt.show()
                 n_packet+=1
-                print("Packet number: ",dateS,dateNS,n_packet,Cloud.header.seq)
-
+                print("Packet number: ",dateS,dateNS,n_packet,Cloud.header.seq,len(angles))
+            else:
+                rospy.logwarn("Empty bathy packet")
             #print(angles,times)
     print("\n\nTotal complete packets: "+str(n_packet)+"\n\n")
     

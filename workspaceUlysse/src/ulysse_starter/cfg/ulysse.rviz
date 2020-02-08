@@ -9,8 +9,8 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /PointCloud1
+        - /PointCloud1/Autocompute Value Bounds1
         - /Marker1
-        - /Marker1/Status1
       Splitter Ratio: 0.5
     Tree Height: 416
   - Class: rviz/Selection
@@ -25,6 +25,7 @@ Panels:
   - Class: rviz/Views
     Expanded:
       - /Current View1
+      - /Current View1/Focal Point1
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
@@ -62,9 +63,13 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        imu:
+          Value: true
         map:
           Value: true
         mbes:
+          Value: true
+        odom:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -72,22 +77,24 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        mbes:
-          map:
-            {}
+        map:
+          odom:
+            imu:
+              mbes:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
+        Max Value: 150.1649932861328
+        Min Value: 120.7760009765625
+        Value: false
       Axis: Z
       Channel Name: intensity
       Class: rviz/PointCloud
       Color: 255; 255; 255
-      Color Transformer: Intensity
+      Color Transformer: AxisColor
       Decay Time: 1e+6
       Enabled: true
       Invert Rainbow: false
@@ -100,7 +107,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.009999999776482582
+      Size (m): 0.30000001192092896
       Style: Flat Squares
       Topic: /ulysse/mbes/data
       Unreliable: false
@@ -119,7 +126,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -143,7 +150,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 112.43341064453125
+      Distance: 228.47418212890625
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -158,10 +165,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.4097963571548462
-      Target Frame: <Fixed Frame>
+      Pitch: 0.5499999523162842
+      Target Frame: imu
       Value: Orbit (rviz)
-      Yaw: 0.8053994178771973
+      Yaw: 6.098182201385498
     Saved: ~
 Window Geometry:
   Displays:

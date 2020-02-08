@@ -5,12 +5,13 @@
 
   <node pkg="ulysse_navigation" type="controller.py" name="controller" />
   <node pkg="ssv_computing" type="celerity.py" name="celerity"/> 
-  <node pkg="ublox_gps" type="ublox_ZED-F9H.py" name="gps"/> 
+  <node pkg="ublox_gps" type="ublox_manual_head_cumputing.py" name="gps"/> 
   <node pkg="mbes" type="mbes_to_ros_from_socket.py" name="r2sonic"/> 
-  <node pkg="mbes" type="xyz_saver.py" name="xyz_saver"/> 
 
 <!--IMU-->
     <include file="$(find sbg_driver)/launch/examples/sbg_ekinox.launch"/>
+
+    <include file="$(find ulysse_starter)/launch/tf_starter.launch"/>
 
 <!-- "tcp://10.0.1.20:4003" pour la connection directe à l'autopilote; udp://10.0.1.111:14552@14555 pour mavproxy -->
 <!--Mavproxy : $ mavproxy.py -master=tcp:10.0.1.20:4003 -out=127.0.0.1:14551 -out=10.0.1.88:14552-->

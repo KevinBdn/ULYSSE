@@ -14,7 +14,7 @@ from pointComputing import *
 
 PATH = rospkg.RosPack().get_path('mbes')
 
-svp_data_file="1_2019-10-09_12-49-25_Up.asvp"
+svp_data_file="1_2020-02-03_14-59-35_Up.asvp"
 
 
 if __name__ == '__main__':
@@ -30,7 +30,8 @@ if __name__ == '__main__':
     svpArray = np.asarray(np.loadtxt(svp, delimiter=' ', skiprows = 1))
     
     #Construction d'un profil de celerite standard
-    refSvp = cleanSVP(svpArray)
+#    refSvp = cleanSVP(svpArray)
+    refSvp = svpArray
     #print(refSvp)
 
     n_packet=0
@@ -53,8 +54,9 @@ if __name__ == '__main__':
                     Cloud.points.append(Point32(0,x_b,y_b))
                 data_pub.publish(Cloud)
                 n_packet+=1
-                print("Packet number: ",dateS,dateNS,n_packet,Cloud.header.seq)
-
+                print("Packet number: ",dateS,dateNS,n_packet,Cloud.header.seq,len(angles))
+            else:
+                rospy.logwarn("Empty bathy packet")
             #print(angles,times)
     print("\n\nTotal complete packets: "+str(n_packet)+"\n\n")
     

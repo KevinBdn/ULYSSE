@@ -6,4 +6,8 @@
 <!-- SBG topics to Odemetry topic && TF through Geonav_transform node-->
     <include file="$(find ulysse_tf)/launch/sbg_geonav_transform.launch"/>
 
+<!-- GNSS head computing-->
+
+  <node pkg="ublox_gps" type="ublox_manual_head_cumputing.py" name="gps"/>
+
 </launch>

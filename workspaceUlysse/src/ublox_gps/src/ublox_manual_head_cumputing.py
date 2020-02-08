@@ -26,6 +26,9 @@ __status__  = "Development"
         - modification de la trame GST
         - resynchronisation des trames
         - decouper les fichiers apres une certaine taille
+
+    Important:
+        - A priori nécessité envoyé la trame ZDA avant les autres
     
 """
 
@@ -48,11 +51,11 @@ from datetime import datetime
 BASENAME="gps"
 DIAG_BASENAME="GPS -"
 
-HEADING_BIAS = 1.895 # biais en degres entre axe des GPS et axe de la centrale
+HEADING_BIAS = -0.52 # biais en degres entre axe des GPS et axe de la centrale
 
 # On lit sur port serie les positions RTK :
-COM_UBLOX_2 = '/dev/ttyACM0'#Arriere
-COM_UBLOX_1 = '/dev/ttyACM1'#Avant
+COM_UBLOX_2 = '/dev/ttyACM1'#Avant (cap)
+COM_UBLOX_1 = '/dev/ttyACM0'#Arriere (position)
 BD = 115200
 COM_TIMEOUT = 1e-4 # 100us
 
@@ -93,7 +96,8 @@ def DM2DD(dm, sign):
         Exemple : '4825.0876539' devient '48.418127565'
     """
     # Conversion des coordonnees degre-minute en degre :
-    dd = np.float((dm[:-10])) + np.float((dm[-10:]))/60.
+    print(dm[:-10],dm[-10:])
+    dd = float(dm[:-10]) + float(dm[-10:])/60.
     
     # Convention de signe :
     if sign in ['S', 'W']:
@@ -116,7 +120,7 @@ def ublox_connection(serial_port):
 
 def get_nmea_data(port):
     """
-        Listen to u-blox serial port
+        Listen to u-blox serial port (position antenna)
         
         If frame is incomplete, infinite loop waiting for next complete frame
     """
@@ -126,15 +130,17 @@ def get_nmea_data(port):
     # Wait for RMC message :
     rmc = port.readline().decode("utf-8")
     while not 'RMC' in rmc:
-        if rmc: print("Wait for RMC : ", rmc)
+        if rmc: 
+            print("Wait for RMC : ", rmc)
         rmc = port.readline().decode("utf-8")
+
     
     # Read GGA+GST+ZDA messages :
     gga = port.readline().decode("utf-8")
     gst = port.readline().decode("utf-8")
     zda = port.readline().decode("utf-8")
     
-    t = np.float(rmc[7:16])
+    t = np.float(gga[7:16])
     
     # Print messages :
     print("Trames :")
@@ -149,25 +155,64 @@ def get_nmea_data(port):
         rmc, gga, gst, zda, t = get_nmea_data(port)
     
     return rmc, gga, gst, zda, t
+
+def get_gga_data(port):
+    """
+        Listen to u-blox serial port (heading antenna)
+        
+        If frame is incomplete, infinite loop waiting for next complete frame
+    """
+    
+    
+    # Wait for GGA message :
+    gga = port.readline().decode("utf-8")
+    while not 'GGA' in gga:
+        if gga: print("Wait for GGA : ", gga)
+        gga = port.readline().decode("utf-8")
+    
+    
+    t = np.float(gga[7:16])
+    
+    # Print messages :
+    print("Heading antenna frame :")
+    print(" GGA: ",gga)
+    
+    # Quality check :
+    if not 'GGA' in gga:
+        print("Issue with GGA frame decoding !\nMessage:\nGGA:{0}\n".format(gga))
+        gga, t = get_gga_data(port)
+    
+    return gga, t
     
 def complete_gst(gst_in, gga_in):
     """
         Write NMEA GST frame according to a given position
+
+        2. RMS value of the pseudorange residuals
+        3. Error ellipse semi_major axis (1sigma)
+        4. Error ellipse semi_minor axis (1sigma)
+        5. Error ellipse orientation
+        6. Latitude 1sigma error
+        7. Longitude 1sigma error
+        8. Height 1sigma error
     """
-    
+
     gst_out = gst_in.split(',')
-    gga_in = gga_in.split(',')
-    hdop = np.float(gga_in[8])
-    hdop = 0.05
-    gst_out[2] = str(hdop)
-    gst_out[3] = str(hdop)
-    gst_out[4] = str(hdop)
-    gst_out[5] = str(0.1)
+#    gga_in = gga_in.split(',')
+#    hdop = np.float(gga_in[8])
+#    hdop = 0.05
+    q=1
+    gst_out[2] = str(0.006*q)
+    gst_out[3] = str(float(gst_out[6])*q)
+    gst_out[4] = str(float(gst_out[7])*q)
+    gst_out[6] = str(float(gst_out[6])*q)
+    gst_out[7] = str(float(gst_out[7])*q)
+    gst_out[5] = str(270.0)
     gst = ','.join(gst_out)
     
     # Apply new checksum :
     gst = gst[:-4] + checksum(gst) + gst[-2:]
-    
+
     return gst
 
 def calculate_initial_compass_bearing(pointA, pointB):
@@ -213,16 +258,16 @@ def send_nmea(udp_port, rmc, gga, gst, zda, hdt):
     """
         Send GNSS data to SBG Systems Ekinox-1 using UDP protocol
     """
-    
+    if zda!="":
+        udp_port.sendto(zda.encode('utf-8'), (UDP_IP, UDP_PORT))
     # Send data :
     udp_port.sendto(rmc.encode('utf-8'), (UDP_IP, UDP_PORT))
     udp_port.sendto(gga.encode('utf-8'), (UDP_IP, UDP_PORT))
     udp_port.sendto(gst.encode('utf-8'), (UDP_IP, UDP_PORT))
     udp_port.sendto(hdt.encode('utf-8'), (UDP_IP, UDP_PORT))
-    if zda:
-        udp_port.sendto(zda.encode('utf-8'), (UDP_IP, UDP_PORT))
+
         
-def write_nmea(rmc_1, gga_1, gst_1, zda_1, rmc_2, gga_2, gst_2, zda_2, hdt, f1, f2, fh):
+def write_nmea(rmc_1, gga_1, gst_1, zda_1, gga_2, hdt, f1, f2, fh):
     """
         Save GNSS data into ascii files
     """
@@ -232,12 +277,9 @@ def write_nmea(rmc_1, gga_1, gst_1, zda_1, rmc_2, gga_2, gst_2, zda_2, hdt, f1, 
     if zda_1:
         f1.write(zda_1)
         
-    f2.write(rmc_2)
+
     f2.write(gga_2)
-    f2.write(gst_2)
-    if zda_2:
-        f2.write(zda_2)
-        
+
     fh.write(hdt)
     
     
@@ -282,8 +324,6 @@ if __name__ == '__main__':
     udp_server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     
     f1, f2, fh = create_empty_logfiles(PATH)
-    
-
 
 
 # =============================================================================
@@ -307,42 +347,36 @@ if __name__ == '__main__':
             
             # Listen COM ports :
             rmc_1, gga_1, gst_1, zda_1, t_f1 = get_nmea_data(port_ub1)
-            rmc_2, gga_2, gst_2, zda_2, t_f2 = get_nmea_data(port_ub2)
-            
+            gga_2, t_f2 = get_gga_data(port_ub2)
             t0bis = time.time()
             # Check desynchronisation of the two antenna
             while t_f1 != t_f2:
                 if t_f1 < t_f2:
                     rmc_1, gga_1, gst_1, zda_1, t_f1 = get_nmea_data(port_ub1)
                 else:
-                    rmc_2, gga_2, gst_2, zda_2, t_f2 = get_nmea_data(port_ub2)
+                    gga_2, t_f2 = get_gga_data(port_ub2)
             
-            
-            # Skip floating values of time :
+#            # Skip floating values of time :
             if not '.00' in zda_1[13:16]:
                 zda_1 = ""
-            if not '.00' in zda_2[13:16]:
-                zda_2 = ""
             
             
             t1 = time.time()
             
-            
             # Get 2D position (latitude/longitude) from the two GNSS antenna :
             gga_1_list = gga_1.split(',')
             print(gga_1_list)
-            lat1 = DM2DD(gga_1_list[2], gga_1_list[3])
-            lon1 = DM2DD(gga_1_list[4], gga_1_list[5])
+            lat1 = DM2DD(gga_1_list[2],gga_1_list[3])
+            lon1 = DM2DD(gga_1_list[4],gga_1_list[5])
             
             gga_2_list = gga_2.split(',')
-            
-            lat2 = DM2DD(gga_2_list[2], gga_2_list[3])
-            lon2 = DM2DD(gga_2_list[4], gga_2_list[5])
+            print(gga_2_list)
+            lat2 = DM2DD(str(gga_2_list[2]), gga_2_list[3])
+            lon2 = DM2DD(str(gga_2_list[4]), gga_2_list[5])
             
             # Modify GST message (add standard deviation information) :
             gst_1 = complete_gst(gst_1, gga_1)
-            
-            
+
             t2 = time.time()
             
             # Compute GNSS heading :
@@ -362,7 +396,7 @@ if __name__ == '__main__':
 
             send_nmea(udp_server, rmc_1, gga_1, gst_1, zda_1, hdt)
             
-            write_nmea(rmc_1, gga_1, gst_1, zda_1, rmc_2, gga_2, gst_2, zda_2, hdt, f1, f2, fh)
+            write_nmea(rmc_1, gga_1, gst_1, zda_1, gga_2, hdt, f1, f2, fh)
             
             arr=DiagnosticArray()
             arr.status.append(DiagnosticStatus(level=0,name=DIAG_BASENAME+" Calcul Time",message="{0:.1f}ms".format((t3-t0bis)*1e3)))

@@ -1,0 +1,23 @@
+<launch>
+
+<!--rosparam set use_sim_time true-->
+
+<!--rosbag play ../Bag_files/Ligne2_mbes_equi_distant/2020-02-06-17-27-43.bag -topics /sbg/ekf_nav /sbg/ekf_quat /sbg/utc_time /ulysse/mbes/data -clock-->
+
+
+
+<!--  <node pkg="ulysse_tf" type="TEST_tf_mbes.py" name="tf_mbes"/>-->
+  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" args="0.2172 -0.0205 -0.1768 0 0 0 1 imu mbes 1" />
+
+  <node pkg="ulysse_tf" type="sbg_to_odom.py" name="sbg_to_odom" />
+
+  <node pkg="geonav_transform" type="geonav_transform_node" name="geonav_transform">
+    <rosparam param="datum">[-3.013725510, 48.2001401410, 0.0]</rosparam>
+    <rosparam param="base_link_frame_id">imu</rosparam>
+    <rosparam param="utm_frame_id">map</rosparam>
+
+  </node>
+
+
+
+</launch>

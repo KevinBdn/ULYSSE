@@ -39,8 +39,8 @@ def mbesSaver(PtCloud):
 
 #    print(t.lookup_transform('mbes', 'map', rospy.Time()))
 #    listener.waitForTransform('/mbes', '/map', rospy.Time(),rospy.Duration(0.1))
-    PtCloud.header.stamp = listener.getLatestCommonTime('/mbes','/map')
-    PtCloud_map_frame = listener.transformPointCloud("/map", PtCloud)
+    PtCloud.header.stamp = listener.getLatestCommonTime('/mbes','/odom')
+    PtCloud_map_frame = listener.transformPointCloud("/odom", PtCloud)
 
 
     i=1
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 #    t=tf2_ros.Buffer(rospy.Duration(1))
 
     listener = tf.TransformListener()
-    listener.waitForTransform('/mbes', '/map', rospy.Time(),rospy.Duration(10.0))
+    listener.waitForTransform('/mbes', '/odom', rospy.Time(),rospy.Duration(10.0))
 
     mbesBeam = rospy.Subscriber("/ulysse/mbes/data", PointCloud, mbesSaver)
 

@@ -39,19 +39,22 @@ def cleanSVP(svpArray):
     indices.append(ind_prec)
     
     for i in range(len(svpArray)):
+
         ind = int(svpArray[i][0])
+        print(len(svpArray),ind)
 
         if (ind != ind_prec):
             sum += svpArray[i][1]
             nb += 1
             ecart = (ind - ind_prec)
+            print(ecart)
             #print(ecart)
             if (ecart != 1):
                 #print("!!!" + str(ind))
                 for v in range(ecart-1):
                     indices.append(ind_prec+(v+1))
-                    #print(ind)
-                    #print(means)
+                    print(ind)
+                    print(means)
                     means.append((means[ind-3]+(sum/nb))/2)
             means.append(sum/nb)
             indices.append(ind)

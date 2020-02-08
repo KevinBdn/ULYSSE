@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import 
 from math import *
-from scipy.spatial.transform import Rotation as R
+#from scipy.spatial.transform import Rotation as R
 
 def SVP_deviation_step(i0, Tf, offset, SVP, plot):
     """
@@ -13,6 +13,7 @@ def SVP_deviation_step(i0, Tf, offset, SVP, plot):
     SVP_D=SVP[0]
     SVP_V=SVP[1]
 
+    theoric_angle = i0
     tf=Tf/2
     d0=0
     X=0
@@ -65,7 +66,7 @@ def SVP_deviation_step(i0, Tf, offset, SVP, plot):
     if plot:
         plt.figure()
         plt.plot(X_list,Y_list,'or')
-        plt.plot(cos(0.7+offset)*SVP_V[0]*tf,sin(0.7+offset)*SVP_V[0]*tf,'ob')
+        plt.plot(cos(theoric_angle+offset)*SVP_V[0]*tf,sin(theoric_angle+offset)*SVP_V[0]*tf,'ob')
         for y in Y_list[0:-1]:
             plt.plot([-X_list[-1]-5,X_list[-1]+5],[y,y],'black')
         plt.legend(["Vector with SVP","Vector without SVP"])
@@ -95,7 +96,7 @@ def SVP_deviation(i0, Tf, offset, SVP):
         #Vecteur unitaire de la couche
         x=cos(i0+offset)
         y=sin(i0+offset)
-
+        print(T)
         #Calcul du tps passe dans la couche ainsi que la distance parcourue dans cette couche
         if i==(len(SVP_V)-1):#Deniere couche, on sait le tps qu'il manque et la vitesse
             t=tf-T
@@ -120,31 +121,33 @@ def SVP_deviation(i0, Tf, offset, SVP):
             d0=SVP_D[i]
             i+=1
 
+        print(i0,X,Y)
+
     return (X,Y)
 
-def localisation(xp,yp,zp,Bp,Bw):
-    """
-        Compute a mesured point from the boat frame to the earth frame.
-        ----
-            xp, yp, zp - point coord
-            Bp - Boat position vector
-            Bw - Boat rotation vector
-    """
-    Mp=[xp,yp,zp]
-    RM= R.from_euler('xyz',Bw.flatten())
-    RM= R.from_rotvec(Bw)
-    r=RM.apply(Mp)
-    V=RM.apply(Mp)+Bp
+#def localisation(xp,yp,zp,Bp,Bw):
+#    """
+#        Compute a mesured point from the boat frame to the earth frame.
+#        ----
+#            xp, yp, zp - point coord
+#            Bp - Boat position vector
+#            Bw - Boat rotation vector
+#    """
+#    Mp=[xp,yp,zp]
+#    RM= R.from_euler('xyz',Bw.flatten())
+#    RM= R.from_rotvec(Bw)
+#    r=RM.apply(Mp)
+#    V=RM.apply(Mp)+Bp
 
-    return(V)
+#    return(V)
 
 if __name__=="__main__":
 
-
-    SVP=[[10+k*2 for k in range(10)],[1470+k*1 for k in range(10)]]#Profondeurs par rapport au bateau
+    svp="../../RESOURCES/SVP/1_2020-02-03_14-59-35_Up.asvp"
+    SVP= np.asarray(np.loadtxt(svp, delimiter=' ', skiprows = 1)).T#Profondeurs par rapport au bateau
     offset=3*pi/2#Representation du nuage des points
 
-    i0=0.867#Angle du faisceau [R2Sonic]
+    i0=0.60#Angle du faisceau [R2Sonic]
     Tf=0.0318#Tps aller-retour du faisceau [R2Sonic]
 
     P=np.array([10,10,10])#Position du bateau (x,y,z)  [GPS]
@@ -166,22 +169,22 @@ if __name__=="__main__":
     print("[DEBUG] Real time:",Tf)#Doit valoir presque le Time computing
     print("Point computing with SVP in boat frame:",(X,0,Y))
 
-    v=localisation(X,0,Y,P,Vr)
-    print("Point computing with SVP in earth frame:",v)
-    
-    fig=plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(P[0],P[1],P[2],marker='+')
-    ax.scatter(cos(i0+offset)*SVP[1][0]*Tf/2,0,sin(i0+offset)*SVP[1][0]*Tf/2,marker='o',c="r")
-    ax.scatter(X, [0], Y, marker='o',c="b")
-    ax.scatter(v[0],v[1],v[2],marker='^')
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
-    ax.set_zlim(-30, 10)
-    ax.set_ylim(-50, 50)
-    ax.set_xlim(-50, 50)
-    ax.legend(["Boat position","Computed Point with SSV only in boat frame","Computed Point with SVP in boat frame","Computed point with SVP in earth frame"])
+#    v=localisation(X,0,Y,P,Vr)
+#    print("Point computing with SVP in earth frame:",v)
+#    
+#    fig=plt.figure()
+#    ax = fig.add_subplot(111, projection='3d')
+#    ax.scatter(P[0],P[1],P[2],marker='+')
+#    ax.scatter(cos(i0+offset)*SVP[1][0]*Tf/2,0,sin(i0+offset)*SVP[1][0]*Tf/2,marker='o',c="r")
+#    ax.scatter(X, [0], Y, marker='o',c="b")
+#    ax.scatter(v[0],v[1],v[2],marker='^')
+#    ax.set_xlabel('X Label')
+#    ax.set_ylabel('Y Label')
+#    ax.set_zlabel('Z Label')
+#    ax.set_zlim(-30, 10)
+#    ax.set_ylim(-50, 50)
+#    ax.set_xlim(-50, 50)
+#    ax.legend(["Boat position","Computed Point with SSV only in boat frame","Computed Point with SVP in boat frame","Computed point with SVP in earth frame"])
 
     plt.show()
 

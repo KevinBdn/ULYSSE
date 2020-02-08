@@ -1,6 +1,7 @@
 import struct
 import time
 import socket
+import numpy as np
 from SVP import calculateXYsvp
 
 BUFFER_SIZE=65535 #Taille maximale d'un message UDP
@@ -64,7 +65,7 @@ def getMBESdata(sock, saving_file):
         p3=s3.unpack(record3)
         #print p3
 
-        if p3[1]=='2':#Si section A2
+        if p3[1]=='2':#Si section A2 - Equi distant
             str1="H"*N
             s4=struct.Struct(">"+str1)
             record4 = message[:s4.size],message[s4.size:]
@@ -124,12 +125,16 @@ def getMBESdata(sock, saving_file):
         X = []
         Y = []
         
-        if (p3[1] == '2'):
+        if (p3[1] == '2'):#Section A2 - Equi distant
             for time in p2:
                 sumDelt += p4[i]
                 angles.append(p3[3]+sumDelt*p3[4])
                 times.append(time*scaleFactor)
                 i+=1
+        elif (p3[1] == '0'):#Section A0 - Equi angle
+            angles=np.linspace(p3[2],p3[3],N)
+            for time in p2:
+                times.append(time*scaleFactor)
         return(angles,times,dateS,dateNS,pingNum)
     except:
         print("Error in unpacking socket")
@@ -166,7 +171,7 @@ def readMBESdata(f):
         p3=s3.unpack(record3)
         #print p3
 
-        if p3[1]=='2':#Si section A2
+        if p3[1]=='2':#Si section A2  - Equi distant
             str1="H"*N
             s4=struct.Struct(">"+str1)
             record4 = f.read(s4.size)
@@ -236,12 +241,16 @@ def readMBESdata(f):
         #f = open("data.txt", "w")
         
         #f.write("Time_two-way[seconds];Angle[radians];x[m];y[m]\n")
-        if (p3[1] == '2'):
+        if (p3[1] == '2'):#Section A2 - Equi distant
             for time in p2:
                 sumDelt += p4[i]
                 angles.append(p3[3]+sumDelt*p3[4])
                 times.append(time*scaleFactor)
                 i+=1
+        elif (p3[1] == '0'):#Section A0 - Equi angle
+            angles=np.linspace(p3[3],p3[4],N)
+            for time in p2:
+                times.append(time*scaleFactor)
         return(angles,times,dateS,dateNS,pingNum)
     except:
             return(None,None,None,None,None)
