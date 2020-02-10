@@ -30,7 +30,7 @@ def boatSimulatorInit():
     robotMarker.color.b = 0.8
     robotMarker.color.a = 1.0
     robotMarker.type = 10
-    robotMarker.mesh_resource = "package://ulysse_tf/mesh/tinker.obj";
+    robotMarker.mesh_resource = "package://ulysse_tf/mesh/ulysse.obj";
     return robotMarker
 
 def boatSimulator(myTime):

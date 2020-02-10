@@ -9,7 +9,6 @@
         http://docs.ros.org/api/nav_msgs/html/msg/Odometry.html
     
     Improvement:
-        Check time before filling the Odometry message
         Add accuracy in Odometry message from quaternion and navigation messages
 """
 import time

@@ -1,7 +1,7 @@
 ROS packages
 ============
 
-Package regroupant les launchs utiles pour faire de la bathymétrie depuis ROS sur Ulysse
+Package regroupant les launchs utiles pour faire de la bathymétrie depuis ROS sur Ulysse.
 		
 Répertoires
 ------------
@@ -49,3 +49,11 @@ Répertoires
 		* **xyz_saver.py**: Enregistrement du fichier MNT. Voir [mnt](../mnt/README.md).
 
 		
+Configuration d'Ulysse
+-----
+
+* **GPS**
+* **SSV**
+* **SBG driver**
+* **Bras de levier**
+* **Mavproxy**
