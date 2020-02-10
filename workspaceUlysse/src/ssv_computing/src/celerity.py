@@ -26,6 +26,7 @@ __status__  = "Development"
 import rospy
 import rospkg
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
+from std_msgs.msg import Float32
 
 import numpy as np
 import os
@@ -81,6 +82,7 @@ def create_empty_logfiles(path):
 if __name__ == '__main__':
 
     rospy.init_node(BASENAME, anonymous=False, log_level=rospy.DEBUG)
+    ssv_pub = rospy.Publisher("/ulysse/ssv", Float32, queue_size=20)
     diag=rospy.Publisher("diagnostics",DiagnosticArray, queue_size=5)
 
     P = 1
@@ -169,6 +171,7 @@ if __name__ == '__main__':
 # =============================================================================
 #               # On diffuse par protocole ethernet UDP la celerite de surface
                 server.sendto(str_ssv.encode('utf-8'), (UDP_IP, UDP_PORT))
+                ssv_pub.publish(Float32(float(str_ssv[0:-1])))
                 arr.status.append(DiagnosticStatus(level=0,name=DIAG_BASENAME+" Value",message=str_ssv[0:-1]))
                 arr.header.stamp= rospy.Time.now()
                 diag.publish(arr)

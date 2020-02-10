@@ -8,8 +8,6 @@ from mavros_msgs.msg import WaypointList,State
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 from mavros_msgs.msg import State
 from mavros_msgs.msg import WaypointList
-from battery import Battery
-from waypoints import Waypoint
 import mavros_msgs.srv
 
 import threading
@@ -124,7 +122,7 @@ class Controller(object):
 
 if __name__=='__main__':
     try:
-        rospy.init_node("Controller", anonymous=True)
+        rospy.init_node("Controller", anonymous=False)
         controller=Controller(battery_min=12)
         #controller.warning_callback()
         rate=rospy.Rate(1)

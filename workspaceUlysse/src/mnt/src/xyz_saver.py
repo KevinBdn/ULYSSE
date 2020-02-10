@@ -13,7 +13,7 @@ import tf2_ros
 from sensor_msgs.msg import PointCloud
 
 
-PATH = rospkg.RosPack().get_path('mbes')
+PATH = rospkg.RosPack().get_path('mnt')
 
 
 def date():
@@ -51,7 +51,7 @@ def mbesSaver(PtCloud):
 
 if __name__ == '__main__':
 
-    rospy.init_node('xyz_saver')
+    rospy.init_node('MNT_saver')
 
     init_date= date()
     f = open(PATH+"/LOGS/XYZ/xyz_"+init_date+".txt", "w")

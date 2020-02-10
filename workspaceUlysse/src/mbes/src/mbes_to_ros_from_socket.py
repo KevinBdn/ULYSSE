@@ -10,7 +10,6 @@ from visualization_msgs.msg import Marker
 
 from MBES import *
 from SVP import *
-from pointComputing import *
 
 PATH = rospkg.RosPack().get_path('mbes')
 
@@ -43,7 +42,6 @@ if __name__ == '__main__':
                 X_b,Y_b=[],[]
                 Cloud=PointCloud()
                 Cloud.header.stamp=rospy.Time(dateS,dateNS)
-#                Cloud.header.seq=pingNum
                 Cloud.header.frame_id="mbes"
                 for i in range(len(angles)):
                     angle=angles[i]
@@ -54,10 +52,9 @@ if __name__ == '__main__':
                     Cloud.points.append(Point32(0,x_b,y_b))
                 data_pub.publish(Cloud)
                 n_packet+=1
-                print("Packet number: ",dateS,dateNS,n_packet,Cloud.header.seq,len(angles))
+                print("Packet number: ",n_packet,dateS,dateNS,len(angles))
             else:
                 rospy.logwarn("Empty bathy packet")
-            #print(angles,times)
     print("\n\nTotal complete packets: "+str(n_packet)+"\n\n")
     
     closeMBESsocket(socket,saving_file)

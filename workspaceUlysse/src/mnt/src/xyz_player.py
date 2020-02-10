@@ -8,7 +8,7 @@ from geometry_msgs.msg import Point32
 from sensor_msgs.msg import PointCloud
 from visualization_msgs.msg import Marker
 
-PATH = rospkg.RosPack().get_path('mbes')
+PATH = rospkg.RosPack().get_path('mnt')
 
 mnt_data_file="xyz_6_2_2020-16H36m2s.txt"
 

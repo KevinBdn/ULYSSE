@@ -5,6 +5,54 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 from math import *
 #from scipy.spatial.transform import Rotation as R
 
+def cleanSVP(svpArray):
+    """
+        Normalize an input SVP with value at each meter.
+    """
+    #Redefinition du SVP
+    #Couches de 1m !!! Gestion des couches inexistantes
+    indices = []
+    means = []
+    sum  = svpArray[0][1]
+    ind_prec = int(svpArray[0][0])
+    nb = 1
+    indices.append(ind_prec)
+    
+    for i in range(len(svpArray)):
+
+        ind = int(svpArray[i][0])
+        print(len(svpArray),ind)
+
+        if (ind != ind_prec):
+            sum += svpArray[i][1]
+            nb += 1
+            ecart = (ind - ind_prec)
+            #print(ecart)
+            if (ecart != 1):
+                #print("!!!" + str(ind))
+                for v in range(ecart-1):
+                    indices.append(ind_prec+(v+1))
+                    means.append((means[ind-3]+(sum/nb))/2)
+            means.append(sum/nb)
+            indices.append(ind)
+            nb = 1
+            sum = svpArray[i][1]
+
+        if (ind == ind_prec):
+            sum += svpArray[i][1]
+            nb += 1
+        ind_prec = ind
+    #Derniere iteration a prendre en compte
+    means.append(sum/nb)
+
+    #print(indices)
+    #print(means)
+    svpMean = np.vstack((np.array(indices), np.array(means))).T
+    #print(svpMean)
+
+    return svpMean
+
+
 def SVP_deviation_step(i0, Tf, offset, SVP, plot):
     """
         Compute the deviation for each layer of the SVP in the boat frame.
@@ -96,7 +144,6 @@ def SVP_deviation(i0, Tf, offset, SVP):
         #Vecteur unitaire de la couche
         x=cos(i0+offset)
         y=sin(i0+offset)
-        print(T)
         #Calcul du tps passe dans la couche ainsi que la distance parcourue dans cette couche
         if i==(len(SVP_V)-1):#Deniere couche, on sait le tps qu'il manque et la vitesse
             t=tf-T
@@ -121,7 +168,6 @@ def SVP_deviation(i0, Tf, offset, SVP):
             d0=SVP_D[i]
             i+=1
 
-        print(i0,X,Y)
 
     return (X,Y)
 
