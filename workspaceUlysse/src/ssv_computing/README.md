@@ -1,7 +1,7 @@
 SSV Computing Package
 ====
 
-Package ROS permettant de calculer la célérité de surface (SSV) à partir d'un capteur de température et de salinité.
+Package ROS permettant de calculer la célérité de surface (SSV) à partir d'un capteur de température et de conductivité.
 
 Architecture de dossiers
 ---
