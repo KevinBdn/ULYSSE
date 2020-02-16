@@ -93,8 +93,8 @@ if __name__ == '__main__':
     file = create_empty_logfiles(PATH)
 
     # On lit sur port serie les trames du capteur de temperature
-    COM_IN = '/dev/ttyUSB0'
-    BD_IN = 9600
+    COM_IN = rospy.get_param('/celerity/sensor/port','/dev/ttyUSB0')
+    BD_IN = rospy.get_param('/celerity/sensor/baudrate',9600)
     TO_IN = 1 # timeout de 1sec pour le capteur de temperature
     LEN_TEMP_FRAME = 81 # longueur des trames
     START_FRAME = '%'#= 37 avant
@@ -108,11 +108,12 @@ if __name__ == '__main__':
 
 
     # Creation d'un serveur UDP :
-    UDP_IP = "10.255.255.255"
-    UDP_PORT = 1040
+    UDP_IP = rospy.get_param('/celerity/server/IP',"10.255.255.255")
+    UDP_PORT = rospy.get_param('celerity/server/port',1040)
     server = socket.socket(socket.AF_INET, # Internet
                                    socket.SOCK_DGRAM) # UDP
     server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
 
 # =============================================================================
 #     LECTURE DE LA TEMPERATURE

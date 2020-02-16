@@ -1,10 +1,23 @@
 <launch>
 
+  <rosparam command="load" file="$(find ulysse_starter)/cfg/configuration.yaml"/>
+
 <!-- SBG topics to Odemetry topic && TF through Geonav_transform node-->
     <include file="$(find ulysse_tf)/launch/sbg_geonav_transform.launch"/>
 
 <!-- MBES to IMU TF-->
-  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" args="0.2172 -0.0205 -0.1768 0 0 0 1 imu mbes 1" />
+  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" 
+    launch-prefix="/bin/bash -c '$* 
+    `   rosparam get mbes_to_imu/T_x; 
+        rosparam get mbes_to_imu/T_y; 
+        rosparam get mbes_to_imu/T_Z; 
+        rosparam get mbes_to_imu/Q_x; 
+        rosparam get mbes_to_imu/Q_y;
+        rosparam get mbes_to_imu/Q_z;
+        rosparam get mbes_to_imu/Q_w; 
+        rosparam get mbes_to_imu/frame_id; 
+        rosparam get mbes_to_imu/child_id; 
+        rosparam get mbes_to_imu/period`' --" />
 
 <!-- Ulysse marker-->
   <node pkg="ulysse_tf" type="boat_simulator.py" name="boat_marker"/>

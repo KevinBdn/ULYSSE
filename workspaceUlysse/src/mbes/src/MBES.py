@@ -1,24 +1,55 @@
+"""
+__author__  = "Kevin Bedin - Ombeline Le Gall"
+__version__ = "1.0.1"
+__date__    = "2019-12-01"
+__status__  = "Development"
+"""
+"""
+    The ``MBES`` module
+    ======================
+    
+    Use it to :
+        - get MBES raw data
+        - save it into LOG file
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+
+    Important:
+        - See the R2SONIC datasheet
+    
+"""
+
 import struct
 import time
 import socket
 import numpy as np
 
 BUFFER_SIZE=65535 #Taille maximale d'un message UDP
-UDP_PORT = 1030
+UDP_PORT = 1030 # Port for the UDP broadcast from the MBES
 
 
 def date():
-    t=time.localtime()
-    m=t[1]
-    j=t[2]
-    a=t[0]
-    hh=t[3]
-    mm=t[4]
-    ss=t[5]
+    """
+        Return the date in interpretable format.
+    """
+    a,m,j,hh,mm,ss,_,_,_=time.localtime()
     date=str(j)+"_"+str(m)+"_"+str(a)+"-"+str(hh)+"H"+str(mm)+"m"+str(ss)+"s"
     return(date)
 
 def initMBESsocket(path):
+    """
+        Create the UDP connection and the LOG file.
+        ---
+        Input:
+            path : path to the `mbes` package
+    """
     f = open(path+"/LOGS/R2SONIC/trames_"+date()+".raw","wb")
     sock = socket.socket(family = socket.AF_INET, type = socket.SOCK_DGRAM)
     sock.bind(('', UDP_PORT))
@@ -26,11 +57,32 @@ def initMBESsocket(path):
 
 
 def closeMBESsocket(sock,saving_file):
+    """
+        Close the UDP connection and the LOG file.
+        ---
+        Input:
+            sock : the socket used for the connection
+            saving_file : the LOG file used
+    """
     sock.close()
     close(saving_file)
 
 def getMBESdata(sock, saving_file):
+    """
+        Get a new raw data from the UDP connection with the MBES.
+        ----
+        Input:
+            sock : the socket used for the connection
+            saving_file : the LOG file used
 
+        Return: Tuple with value order: (None value are returned if an error occurred)
+            angles : list of beams' angle
+            times : list of two-way beams' time
+            dateS : time of the ping (seconds part)
+            dateNS : time of the ping (nanoseconds part)
+            pingNum : ping Number since the power on
+        
+    """
     addr = sock.recvfrom(BUFFER_SIZE)
     print("New raw data")
 
@@ -140,7 +192,20 @@ def getMBESdata(sock, saving_file):
         return(None,None,None,None,None)
 
 def readMBESdata(f):
+    """
+        Get a new raw data from a raw LOG file.
+        ----
+        Input:
+            f : the LOG file used
 
+        Return: Tuple with value order: (None value are returned if an error occurred)
+            angles : list of beams' angle
+            times : list of two-way beams' time
+            dateS : time of the ping (seconds part)
+            dateNS : time of the ping (nanoseconds part)
+            pingNum : ping Number since the power on
+        
+    """
     angles = []
     times = []
     try:

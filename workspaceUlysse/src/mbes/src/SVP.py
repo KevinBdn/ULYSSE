@@ -1,4 +1,29 @@
 #-*- coding: utf-8 -*-
+
+"""
+__author__  = "Kevin Bedin - Ombeline Le Gall"
+__version__ = "1.0.1"
+__date__    = "2019-12-01"
+__status__  = "Development"
+"""
+"""
+    The ``MBES`` module
+    ======================
+    
+    Use it to :
+        - compute the deviation due to SVP
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import 
@@ -8,6 +33,12 @@ from math import *
 def cleanSVP(svpArray):
     """
         Normalize an input SVP with value at each meter.
+        ---
+        Input:
+            svpArray : the SVP loaded in an array
+
+        Output:
+            svpMean : a SVP with level of 1m
     """
     #Redefinition du SVP
     #Couches de 1m !!! Gestion des couches inexistantes
@@ -57,6 +88,18 @@ def SVP_deviation_step(i0, Tf, offset, SVP, plot):
     """
         Compute the deviation for each layer of the SVP in the boat frame.
         ONLY for DEBBUG.
+        ---
+        Input:
+            i0 : incident angle
+            Tf :  two-way time
+            offset : angle offset for representation [rad]
+            SVP : SVP table
+            plot : boolean to plot the result or not
+
+        Output:
+            X_list : list of X coord for each level crossed by the incident angle
+            Y_list : list of Y coord for each level crossed by the incident angle
+            T_list : time passed by the wave in each level crossed
     """
     SVP_D=SVP[0]
     SVP_V=SVP[1]
@@ -126,6 +169,17 @@ def SVP_deviation_step(i0, Tf, offset, SVP, plot):
 def SVP_deviation(i0, Tf, offset, SVP):
     """
         Compute the deviation of the final point in the boat frame.
+        ---
+        Input:
+            i0 : incident angle
+            Tf :  two-way time
+            offset : angle offset for representation [rad]
+            SVP : SVP table
+
+        Output:
+            X : the X coord of the resulted wave (horizontal axis Left to Right)
+            Y : the Y coord of the resulted wave (vertical axis Down to Up)
+
     """
     SVP_D=SVP[0]
     SVP_V=SVP[1]

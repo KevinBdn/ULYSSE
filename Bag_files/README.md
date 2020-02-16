@@ -19,7 +19,7 @@ rosbag record -a -x '/mavros/(.*)'
 
 Lancer un _roscore_:
 
-	$ rocore
+	$ roscore
 	
 Passer le temps en simulation:
 

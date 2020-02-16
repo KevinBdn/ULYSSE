@@ -1,0 +1,62 @@
+#########################
+#       SVP FILE        #
+#########################
+
+# Fichier svp (Up) present dans le dossier `RESOURCES/SVP/` du package `mbes`:
+SVP/svp_file: "1_2020-02-03_14-59-35_Up.asvp"
+
+#########################
+#   UBLOX PARAMETERS    #
+#########################
+
+ublox/heading_bias: -0.52 # biais en degres entre axe des GPS et axe de l'imu
+ublox/sensor/front_port: "/dev/ttyACM1" # GPS fournissant le CAP (Av)
+ublox/sensor/back_port: "/dev/ttyACM0" # GPS fournissant la position (Ar)
+ublox/sensor/baudrate: 115200
+ublox/server/IP: "10.255.255.255"
+ublox/server/port: 1010
+
+
+#########################
+#     SSV PARAMETERS    #
+#########################
+
+celerity/sensor/port: "/dev/ttyUSB0"
+celerity/sensor/baudrate: 9600
+celerity/server/IP: "10.255.255.255"
+celerity/server/port: 1040
+
+############################
+#   LEVER ARM IMU - MBES   #
+############################
+# Plan IMU -> MBES sens ENU (x=Est, y=Nord, z=Up)
+mbes_to_imu/T_x: 0.0205 # meters 
+mbes_to_imu/T_y: 0.2172 # meters
+mbes_to_imu/T_z: -0.1768 # meters
+mbes_to_imu/Q_x: 0. # Quaternion
+mbes_to_imu/Q_y: 0. # Quaternion
+mbes_to_imu/Q_z: 0. #Quaternion
+mbes_to_imu/Q_w: 1 #Quaternion
+mbes_to_imu/frame_id: "imu" 
+mbes_to_imu/child_id: "mbes"
+mbes_to_imu/period: 33 # ms
+
+
+
+#########################
+#   GEONAV PARAMETERS   #
+#########################
+
+# Point de reference pour l'odometrie
+geonav_transform/datum:
+- 48.2001401410 #Latitude [deg decimal]
+- -3.013725510 #Longitude [deg decimal]
+- 0 #Altitude [m]
+
+geonav_transform/base_link_frame_id: "imu"
+
+geonav_transform/utm_frame_id: "map"
+
+geonav_transform/broadcast_utm2odom_transform: False
+
+geonav_transform/frequency: 25

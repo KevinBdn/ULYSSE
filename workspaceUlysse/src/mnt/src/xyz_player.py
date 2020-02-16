@@ -1,4 +1,28 @@
 #!/usr/bin/env python
+
+"""
+__author__  = "Kevin Bedin"
+__version__ = "1.0.1"
+__date__    = "2019-12-01"
+__status__  = "Development"
+"""
+"""
+    The ``MNT`` module
+    ======================
+    
+    Use it to :
+        - play a MNT LOG file in ROS.
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+"""
+
 import time
 
 import rospy
@@ -10,11 +34,14 @@ from visualization_msgs.msg import Marker
 
 PATH = rospkg.RosPack().get_path('mnt')
 
-mnt_data_file="xyz_6_2_2020-16H36m2s.txt"
+mnt_data_file="xyz_16_2_2020-11H39m38s.txt"
 
 
 
 def timeCallback():
+    """
+        Function called to publish the TF between the mbes and the odom.
+    """
     mbes_quat = tf.transformations.quaternion_from_euler(0, 0, 0)
     mbes_broadcaster.sendTransform(
         (0, 0, 0),
@@ -59,5 +86,7 @@ if __name__ == '__main__':
 #                    pass
             data_pub.publish(Cloud)
             timeCallback()
+            time.sleep(0.02)
     
+    mnt.close()
 

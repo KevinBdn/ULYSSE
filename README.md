@@ -1,41 +1,53 @@
 Projet Guerlédan : Ulysse
 ===============
 
-### Lancement depuis Station extérieure
+Projet Guerlédan **2019/2020** dont l'objectif est de réaliser un MNT sous ROS via l'USV Ulysse. Le projet a été réalisé par:
 
-* Avoir le `workspaceUlysse` sur le **NUC-17**.
+* 3 roboticiens:
+	* Kévin BEDIN
+	* Clément BICHAT
+	* Aurélien GRENIER
+	
+* 3 hydrographes:
+	* Ombeline LE GALL
+	* Pauline CELTON
+	* Aurélie PANETIER
+	
+Architecture de dossiers
+---
+	ULYSSE
+		├── Bag_files
+		├── Documentation
+		├── Parser_WP
+		├── WAYPOINT
+		└── workspaceUlysse
 
-* Lancer sur une station extérieure (pc portable) `mavproxy` afin d'avoir plusieurs connexions sur la carte métier (voir le tuto dans le dossier `Documentation/`:
+* **Bag_files/**:
+	* Dossier contenant quelques fichiers bag enregistrés lors de la 2ème semaine de Guerlédan.
+	* Contient également un script python permettant de modifier ces fichiers afin de les corriger.
+	* Fichier exploitable : `Ligne2_mbes_equi_distant/Ligne2_corrigee.bag`
+	
+* **Documentation/**: 
+	* Documentation utile sur le harware (Sbg, R2Sonic, etc...)
+	* Quelques tutoriel (mavlink, sim_vehicle, ...)
+	* Quelques codes (decode de packet binaire R2Sonic en C, ...)
 
-		mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14552 --out=10.0.1.111:14551
-		
-* Dans un autre shell du **NUC-17** on lance les nodes ROS mais en paramètrant le _roscore_ en amont, pour se faire il faut utiliser le script `master_init.sh`:
+* **Parser_WP/**: 
 
-		$ source master_init.sh
-		$ roslaunch ulysse_starter controller.launch
+	* Code de conversion d'un fichier waypoint **Qinsy**  en fichier waypoint **Mavlink**.
 
-Avec dans le `controller.launch` le paramétrage du **fuc**:
+* **workspaceUlysse/**: 
 
-    	<arg name="fcu_url" default="udp://10.0.1.111:14551@14555" />
+	* Workspace ROS pour la gestion d'Ulysse et la réalisation de MNT sous ROS.
 
-* On peut alors depuis une autre machine du réseau accéder aux _roscore_ ainsi qu'à la carte métier d'Ulysse. Il faut ếtre sûr d'avoir charger un workspace dans lequel les message sbg sont décrit (`source devel/setup.sh`) :
+Configuration d'Ulysse
+---
 
-		$ source client_init.sh #Paramètres pour l'export du roscore
-		$ rostopic list
-		$ rosrun rqt_robot_monitor rqt_robot_monitor #Diagnostics
-		
- 	OU bien pour Ardupilot:
- 	
- 		$ apmplanner2
-			-----------------------
-			Communication -> Add Link -> UDP
-				UDP Port : 14552
-				Add IP -> 
-					Host (hostname:port):
-						localhost:14555
+La configuration d'Ulysse est expliquée dans le [README.md](workspaceUlysse/src/ulysse_starter/README.md) du package `ulysse_starter` présent dans le **workspageUlysse**.
 
-### Lancement depuis Ulysse
-
+	
+Lancement d'Ulysse
+---
 * Avoir le `workspaceUlysse` sur le **NUC-17**.
 
 * Une fois en ssh sur le **NUC-17** (Ulysse) on peut lancer `mavproxy` afin d'avoir plusieurs connexions sur la carte métier (voir le tuto dans le dossier `Documentation/`:
@@ -45,9 +57,9 @@ Avec dans le `controller.launch` le paramétrage du **fuc**:
 * Dans un autre shell du **NUC-17** on lance les nodes ROS mais en paramètrant le _roscore_ en amont, pour se faire il faut utiliser le script `master_init.sh`:
 
 		$ source master_init.sh
-		$ roslaunch ros_ulysse ulysse.launch
+		$ roslaunch ulysse_starter ulysse.launch
 		
-* On peut alors depuis une autre machine du réseau accéder aux _roscore_ ainsi qu'à la carte métier d'Ulysse. Il faut ếtre sûr d'avoir charger un workspace dans lequel les message sbg sont décrit (`source devel/setup.sh`) :
+* On peut alors depuis une autre machine du réseau accéder aux _roscore_ ainsi qu'à la carte métier d'Ulysse. Il faut ếtre sûr d'avoir charger un workspace dans lequel les message sbg sont décrits (`source devel/setup.sh`) :
 
 		$ source client_init.sh #Paramètres pour l'export du roscore
 		$ rostopic list
@@ -62,44 +74,50 @@ Avec dans le `controller.launch` le paramétrage du **fuc**:
 				Add IP -> 
 					Host (hostname:port):
 						10.0.1.88:14555
+
+* On peut ainsi par exemple sauvergarder le **MNT** en cours d'acquisition:
+
+		$ rosrun mnt xsy_saver.py
+
+* On peut également monitorer le bon fonctionnement des nodes ROS:
+
+		$ rosrun rqt_robot_monitor rqt_robot_monitor
+		
+* Ou bien la visualisation de l'acquisition en cours:
+
+		$ roslaunch ulysser_starter rviz.launch
 						
-### Informations
+Rejeu d'un MNT
+----
 
-* `Documentation/`: 
-	* Documentation utile sur le harware (Sbg, R2Sonic, etc...)
-	* Quelques tutoriel (mavlink, sim_vehicle, ...)
-	* Quelques informations sur scripts
+Pour rejouer un MNT réalisé sur un ordinateur contenant ce répertoire GIT:
 
-* `IS/` : 
+* **1. Préparer ROS**
 
-	* Quelques points d'ingénierie système
+Exécuter dans un premeir terminal:
 
-* `Parser_WP/`: 
+	$ cd workspaceUlysse
+	$ catkin_make
+	$ source devel/setup.bash
+	$ roscore	
 
-	* Code de conversion d'un fichier waypoint **Qinsy**  en fichier waypoint **Mavlink**.
+* **2. Lancer le fichier bag**
 
+Exécuter dans un second terminal:
 
-* `R2SONIC_DATA_BRUTE/`: 
+	$ cd wokspaceUlysse
+	$ source devel/setup.bash
+	$ rosparam set use_sim_time true
+	$ cd ../Bag_files/Ligne2_mbes_equi_distant
+	$ rosbag play Ligne2_corrigee.bag
 
-	* Quelques données brutes du multifaisceau et scripts python permettant le traitement de ses données (`pointComputing.py`).
+On pourra utiliser l'option `--clock` dans le `rosbag play` pour intéragir avec les topics publiés.
 
-* `SBG_DATA_BRUTE/`: 
+* **3. Visualiser la mission**
 
-	* Quelques données brutes et script python permettant la récupération de ces données.
+Exécuter dans un troisème terminal:
 
-* `workspaceUlysse/`: 
-	
-	* `ulysse_navigation/`: 
-	
-		* Package principale gérant la navigation grâce au package `mavros`
-	
-		
-	* `sbg_ros_driver/` : 
-		
-		* Package ros permettant de récupérer les données de l'IMU sous forme de topics. 
-		>
-		
-		* `config/example/sbg_ekinox.yaml` à changer en fonction de la configuration du port `eth4` de l'IMU (IP: `10.0.1.59`).
-		>
-		
-		* Pour lancer le node: `roslaunch sbg_driver sbg_ekinox.launch`
+	$ cd workspaceUlysse
+	$ source devel/setup.bash
+	$ roslaunch ulysse_starter rviz.launch
+

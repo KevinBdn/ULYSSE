@@ -1,0 +1,52 @@
+<launch>
+
+<!--rosparam set use_sim_time true-->
+
+<!--rosbag play ../Bag_files/Ligne2_mbes_equi_distant/2020-02-06-17-27-43.bag -topics /sbg/ekf_nav /sbg/ekf_quat /sbg/utc_time /ulysse/mbes/data -clock-->
+
+  	<rosparam command="load" file="$(find ulysse_starter)/cfg/configuration.yaml"/>
+
+<!--  <node pkg="ulysse_tf" type="tf_mbes.py" name="tf_mbes"/>-->
+  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" 
+    launch-prefix="/bin/bash -c '$* 
+    `   rosparam get mbes_to_imu/T_x; 
+        rosparam get mbes_to_imu/T_y; 
+        rosparam get mbes_to_imu/T_z; 
+        rosparam get mbes_to_imu/Q_x; 
+        rosparam get mbes_to_imu/Q_y;
+        rosparam get mbes_to_imu/Q_z;
+        rosparam get mbes_to_imu/Q_w; 
+        rosparam get mbes_to_imu/frame_id; 
+        rosparam get mbes_to_imu/child_id; 
+        rosparam get mbes_to_imu/period`' --" />
+
+<!--  <node pkg="tf" type="static_transform_publisher" name="imu" args="0.2172 0.0205 0.1768 0 0 0 1 imu mbes 5" />-->
+
+<!--  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">-->
+<!--    <param name="output_frame" value="odom"/>-->
+<!--    <param name="base_footprint_frame" value="imu"/>-->
+<!--    <param name="freq" value="30.0"/>-->
+<!--    <param name="sensor_timeout" value=".5"/>-->
+<!--    <param name="odom_used" value="false"/>-->
+<!--    <param name="imu_used" value="false"/>-->
+<!--    <param name="vo_used" value="true"/>-->
+<!--    <param name="debug" value="false"/>-->
+<!--    <param name="self_diagnose" value="false"/>-->
+<!--    <remap from="vo" to="/geonav_odom" />-->
+<!--    <remap from="odom" to="/geonav_odom" />-->
+<!--  </node>-->
+
+<!--  <node pkg="ulysse_tf" type="sbg_to_odom.py" name="sbg_to_odom" />-->
+
+  <node pkg="geonav_transform" type="geonav_transform_node" name="geonav_transform" clear_params="true" output="screen"/>
+
+<!--    <rosparam param="base_link_frame_id">imu</rosparam>-->
+<!--    <rosparam param="utm_frame_id">map</rosparam>-->
+<!--    <rosparam param="broadcast_utm2odom_transform">False</rosparam>-->
+<!--    <rosparam param="frequency">10</rosparam>-->
+<!--    <rosparam param="orientation_ned">true</rosparam>-->
+
+<!--  <node pkg="ulysse_tf" type="boat_simulator.py" name="boat_marker"/>-->
+
+
+</launch>

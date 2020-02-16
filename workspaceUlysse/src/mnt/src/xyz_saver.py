@@ -1,9 +1,32 @@
 #!/usr/bin/env python
 
-#http://docs.ros.org/jade/api/tf/html/python/tf_python.html
+"""
+__author__  = "Kevin Bedin"
+__version__ = "1.0.1"
+__date__    = "2019-12-01"
+__status__  = "Development"
+"""
+"""
+    The ``MNT`` module
+    ======================
+    
+    Use it to :
+        - create a MNT from the `MBES` data.
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
 
-#https://w3.cs.jmu.edu/spragunr/CS354_S14/labs/tf_lab/html/tf.listener-pysrc.html#TransformerROS.transformPointCloud
-
+    Documentation :
+        - http://docs.ros.org/jade/api/tf/html/python/tf_python.html
+        - https://w3.cs.jmu.edu/spragunr/CS354_S14/labs/tf_lab/html/tf.listener-pysrc.html#TransformerROS.transformPointCloud
+    
+"""
 import rospy
 import rospkg
 import time
@@ -17,23 +40,27 @@ PATH = rospkg.RosPack().get_path('mnt')
 
 
 def date():
-    t=time.localtime()
-    m=t[1]
-    j=t[2]
-    a=t[0]
-    hh=t[3]
-    mm=t[4]
-    ss=t[5]
+    """
+        Return the date in interpretable format.
+    """
+    a,m,j,hh,mm,ss,_,_,_=time.localtime()
     date=str(j)+"_"+str(m)+"_"+str(a)+"-"+str(hh)+"H"+str(mm)+"m"+str(ss)+"s"
     return(date)
 
 
 
 
-
 def mbesSaver(PtCloud):
-    print("New data: ", PtCloud.header.seq)
-
+    """
+        Callback function called when a new data from the MBES is available.
+        It makes the TF between the mbes and the odom and saves it into a LOG file.
+        ---
+        Input:
+            PtCloud : the ping data
+    """
+    global N
+    print("New data: ", N)
+    N+=1
 
 #    print(listener.lookupTransform('/mbes', '/map', rospy.Time()))
 
@@ -51,6 +78,7 @@ def mbesSaver(PtCloud):
 
 if __name__ == '__main__':
 
+    N=1
     rospy.init_node('MNT_saver')
 
     init_date= date()
@@ -59,7 +87,7 @@ if __name__ == '__main__':
 #    t=tf2_ros.Buffer(rospy.Duration(1))
 
     listener = tf.TransformListener()
-    listener.waitForTransform('/mbes', '/odom', rospy.Time(),rospy.Duration(10.0))
+    listener.waitForTransform('/mbes', '/odom', rospy.Time(),rospy.Duration(30.0))
 
     mbesBeam = rospy.Subscriber("/ulysse/mbes/data", PointCloud, mbesSaver)
 

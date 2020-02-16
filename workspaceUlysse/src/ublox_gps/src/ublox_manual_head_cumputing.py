@@ -4,7 +4,7 @@
 """
 __author__  = "Romain Schwab - Kevin Bedin"
 __version__ = "2.1.1"
-__date__    = "2019-20-20"
+__date__    = "2019-10-20"
 __status__  = "Development"
 """
 """
@@ -51,14 +51,17 @@ from datetime import datetime
 BASENAME="gps"
 DIAG_BASENAME="GPS -"
 
-HEADING_BIAS = -0.52 # biais en degres entre axe des GPS et axe de la centrale
+HEADING_BIAS = rospy.get_param('/ublox/heading_bias',-0.52) # biais en degres entre axe des GPS et axe de la centrale
 
 # On lit sur port serie les positions RTK :
-COM_UBLOX_2 = '/dev/ttyACM1'#Avant (cap)
-COM_UBLOX_1 = '/dev/ttyACM0'#Arriere (position)
-BD = 115200
+COM_UBLOX_2 = rospy.get_param('/ublox/sensor/front_port','/dev/ttyACM1')#Avant (cap)
+COM_UBLOX_1 = rospy.get_param('/ublox/sensor/back_port','/dev/ttyACM0')#Arriere (position)
+BD = rospy.get_param('/ublox/sensor/baudrate',115200)
 COM_TIMEOUT = 1e-4 # 100us
 
+
+UDP_IP = rospy.get_param('/ublox/server/IP',"10.255.255.255")
+UDP_PORT = rospy.get_param('/ublox/server/port',1010)
 
 PATH = rospkg.RosPack().get_path("ublox_gps")+'/LOGS/GNSS_DATA/'
 
@@ -307,6 +310,7 @@ def create_empty_logfiles(path):
 
 if __name__ == '__main__':
 
+#    print((HEADING_BIAS,COM_UBLOX_1,COM_UBLOX_2,UDP_IP,UDP_PORT,BD))
     rospy.init_node(BASENAME, anonymous=False, log_level=rospy.DEBUG)
     diag=rospy.Publisher("diagnostics",DiagnosticArray, queue_size=5)
 
@@ -316,8 +320,6 @@ if __name__ == '__main__':
 
 
     # On diffuse par protocole ethernet UDP les trames NMEA GGA, GST, RMC, ZDA, HDT
-    UDP_IP = "10.255.255.255"
-    UDP_PORT = 1010
     # Creation d'un serveur UDP :
     udp_server = socket.socket(socket.AF_INET, # Internet
                                    socket.SOCK_DGRAM) # UDP

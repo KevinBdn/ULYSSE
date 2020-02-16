@@ -1,4 +1,26 @@
 #!/usr/bin/env python
+"""
+__author__  = "Kevin Bedin"
+__version__ = "1.0.1"
+__date__    = "2019-12-01"
+__status__  = "Development"
+"""
+"""
+    The ``Ulysse TF`` module
+    ======================
+    
+    Use it to :
+        - publish the Ulysse marker
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+        TODO: 
+            C++ implementation
+"""
 import time
 
 import rospy
@@ -13,11 +35,15 @@ import numpy as np
 
 
 def boatSimulatorInit():
+    """
+        Function that initializes the Marker with fixed position to the imu.
+    """
     robotMarker = Marker()
     robotMarker.header.frame_id = "imu"
-    quaternion = tf.transformations.quaternion_from_euler(0, 0, -np.pi/2)
-    robotMarker.pose.position.x = 0.5
-    robotMarker.pose.position.y = 0.05
+    quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
+    robotMarker.pose.position.x = -0.05
+    robotMarker.pose.position.y = 0.6
+    robotMarker.pose.position.z = -0.05
     robotMarker.pose.orientation.x= quaternion[0]
     robotMarker.pose.orientation.y= quaternion[1]
     robotMarker.pose.orientation.z= quaternion[2]
@@ -34,10 +60,23 @@ def boatSimulatorInit():
     return robotMarker
 
 def boatSimulator(myTime):
+    """
+        Funtion used to add a stamp time to the Marker and publish it.
+        ---
+        Input:
+            myTime : the stamp time
+    """
     robotMarker.header.stamp = myTime
     markerPub.publish(robotMarker)
 
 def timeCallback(data):
+    """
+        Callback function called when a new data is coming in the /sbg/utc_time topic.
+        Call the boatSimulator() function with the stamp time of this data.
+        ---
+        Input:
+            data : the SbgUtcTime message
+    """
     boatSimulator(data.header.stamp)
 
 if __name__=="__main__":

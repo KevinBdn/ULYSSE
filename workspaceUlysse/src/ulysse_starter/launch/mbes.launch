@@ -1,10 +1,27 @@
 <launch>
 
+
+
 <!--    MBES raw data to topics-->
   <node pkg="mbes" type="mbes_to_ros_from_socket.py" name="r2sonic"/>
 
 <!--    TF : MBES to IMU -->
-  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" args="0.2172 -0.0205 -0.1768 0 0 0 1 imu mbes 1" />
+
+  <rosparam command="load" file="$(find ulysse_starter)/cfg/configuration.yaml"/>
+
+
+  <node pkg="tf" type="static_transform_publisher" name="mbes_to_imu" 
+    launch-prefix="/bin/bash -c '$* 
+    `   rosparam get mbes_to_imu/T_x; 
+        rosparam get mbes_to_imu/T_y; 
+        rosparam get mbes_to_imu/T_Z; 
+        rosparam get mbes_to_imu/Q_x; 
+        rosparam get mbes_to_imu/Q_y;
+        rosparam get mbes_to_imu/Q_z;
+        rosparam get mbes_to_imu/Q_w; 
+        rosparam get mbes_to_imu/frame_id; 
+        rosparam get mbes_to_imu/child_id; 
+        rosparam get mbes_to_imu/period`' --" />
 
 <!--    SSV computing-->
   <node pkg="ssv_computing" type="celerity.py" name="celerity"/> 
