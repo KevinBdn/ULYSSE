@@ -73,7 +73,7 @@ Architecture de dossiers
 Configuration d'Ulysse
 -----
 
-####1. `configuration.yaml`
+#### 1. `configuration.yaml`
 
 La configuration se fait via le fichier `cfg/configuration.yaml` du package `ulysse_starter` pour les éléments suivants:
 
@@ -97,11 +97,11 @@ La configuration se fait via le fichier `cfg/configuration.yaml` du package `uly
 	* Point de référence pour l'odométrie 
 
 
-####2. `sbg_ekinox.yaml`
+#### 2. `sbg_ekinox.yaml`
 
 En ce qui l'IMU, la configuration se fait dans le fichier yaml `config/example/sbg_ekinox.yaml`du package `sbg_ros_driver`. Cette configuration est à changer en fonction de la configuration du port `eth4` de l'IMU (IP: `10.0.1.59`) (configuration actuelle).
 
-####3. Mavproxy
+#### 3. Mavproxy
 
 **Mavproxy** se lance en local sur le NUC d'Ulysse (sinon il faut changer la configuration dans les launchs). Pour ce faire il suffit de lancer la commande:
 ~~~~sh
