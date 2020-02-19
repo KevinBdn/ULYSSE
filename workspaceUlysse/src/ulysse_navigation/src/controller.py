@@ -3,6 +3,7 @@
 import rospy
 import rospkg
 from std_msgs.msg import Int16
+from diagnostic.msgs import KeyValue
 from sensor_msgs.msg import BatteryState
 from mavros_msgs.msg import WaypointList,State
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
@@ -11,12 +12,12 @@ from mavros_msgs.msg import WaypointList
 from battery import Battery
 from waypoints import Waypoint
 import mavros_msgs.srv
-
 import threading
 
 class Controller(object):
     def __init__(self,battery_min=20):
-        self.diag_pub = rospy.Publisher("/diagnostics",DiagnosticArray,queue_size=1)
+        self.diag_pub = rospy.Publisher("/diagnostics",KeyValueKeyValue,queue_size=1)
+        self.nav_pub = rospy.Publisher("/navigation/line_status",DiagnosticArray,queue_size=1)
         self.battery_sub = rospy.Subscriber("/mavros/battery",BatteryState,self.battery_callback)
         self.state_sub=rospy.Subscriber("/mavros/state",State,self.state_callback)
         self.waypoints_sub = rospy.Subscriber("/mavros/mission/waypoints",WaypointList,self.waypoints_callback)
@@ -65,11 +66,26 @@ class Controller(object):
         if data.waypoints[data.current_seq].param1 == 1:
             if  data.waypoints[self.current_wp].param1 == 0:
                 rospy.logwarn("Fin de ligne")
+                nav_msg = KeyValue()
+                nav_msg.key = "End"
+                if data.waypoints[self.current_seq].param2 == 0:
+                    nav_msg.value = "Reg"
+                else:
+                    nav_msg.value = "Trav"
+                nav_pub.publish(nav_msg)
                 self.last_waypoint = self.current_wp
                 rospy.logwarn("Last Waypoint enregistré "+str(self.last_waypoint))
         elif data.waypoints[data.current_seq].param1 == 0:
             if  data.waypoints[self.current_wp].param1 == 1:
                 rospy.logwarn("Début de ligne")
+                nav_msg = KeyValue()
+                nav_msg.key = "Start"
+                if data.waypoints[data.current_seq].param2 == 0:
+                    nav_msg.value = "Reg"
+                else:
+                    nav_msg.value = "Trav"
+                nav_pub.publish(nav_msg)
+
         self.last_waypoint_list.append(sel.last_waypoint)
 
 
