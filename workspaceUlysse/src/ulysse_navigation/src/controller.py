@@ -8,6 +8,8 @@ from mavros_msgs.msg import WaypointList,State
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 from mavros_msgs.msg import State
 from mavros_msgs.msg import WaypointList
+from battery import Battery
+from waypoints import Waypoint
 import mavros_msgs.srv
 
 import threading
@@ -20,11 +22,14 @@ class Controller(object):
         self.waypoints_sub = rospy.Subscriber("/mavros/mission/waypoints",WaypointList,self.waypoints_callback)
         self.warning = rospy.Subscriber ("/warning", Int16, self.warning_callback )
 
-        self.warning_info_list = []
+        self.last_waypoint_list = []
+        self.warning_list = []
+
         self.battery_min = battery_min
         self.wp_enregistre  = 0
         self.wp_number = 0
         self.current_wp = 0
+        self.last_waypoint = 0
 
 
         self.arming="Disarmed" #Armed or Disarmed
@@ -53,29 +58,43 @@ class Controller(object):
     def waypoints_callback(self,data):
         rospy.logwarn("Changement de waypoint")
         rospy.logwarn("Nouveau waypoint :" + str(data.current_seq))
+        #rospy.logwarn(str(data.waypoints[self.current_wp].param3))
+
         self.wp_number=len(data.waypoints)
+
+        if data.waypoints[data.current_seq].param1 == 1:
+            if  data.waypoints[self.current_wp].param1 == 0:
+                rospy.logwarn("Fin de ligne")
+                self.last_waypoint = self.current_wp
+                rospy.logwarn("Last Waypoint enregistré "+str(self.last_waypoint))
+        elif data.waypoints[data.current_seq].param1 == 0:
+            if  data.waypoints[self.current_wp].param1 == 1:
+                rospy.logwarn("Début de ligne")
+        self.last_waypoint_list.append(sel.last_waypoint)
+
+
         self.current_wp = data.current_seq
+
         diagnostics=DiagnosticArray()
         diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Number", message=str(self.wp_number)))
         diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Current", message=str(self.current_wp)))
         diagnostics.header.stamp=rospy.Time.now()
         self.diag_pub.publish(diagnostics)
-        self.wpt_chang()
+
 
 
         # Waypoint Data
         # uint16 current_seq
         # mavros_msgs/Waypoint[] waypoints
+        #Dans le virage ==> retourné au debut du virage précedent.
 
     def warning_callback (self, data):
         self.warning = data.data
         rospy.logwarn("Warning, type" + str(self.warning))
         if (self.warning == 1):
-            self.wp_enregistre = self.current_wp
             now = rospy.get_rostime()
-            self.warning_info_list.append((now,self.warning,(self.wp_enregistre-1, self.wp_enregistre)))
-            #warning_info_list((time,type_warning,(wp_pre_l'erreur,wp_suivant_l'erreur))
-            rospy.logwarn("Waypoint enregistre :" + str(self.wp_enregistre))
+            rospy.logwarn("Warning : nouveau waypoint :" + str(self.last_waypoint))
+            self.wpt_chang()
         elif (self.warning == -1):
             rospy.logwarn("Mode Loiter activé")
             self.stop()
@@ -84,14 +103,13 @@ class Controller(object):
 
     def wpt_chang(self):
             if (self.warning == 1 ):
-                if (self.current_wp == (self.wp_enregistre + 1)):
-                    rospy.wait_for_service('/mavros/mission/set_current') # timeout ?
-                    try:
-                        current_wpt = rospy.ServiceProxy('/mavros/mission/set_current', mavros_msgs.srv.WaypointSetCurrent)
-                        wpt = current_wpt(wp_seq = (self.wp_enregistre-1))
-                        rospy.logwarn("Nouveau waypoint de correction :" + str(self.wp_enregistre-1))
-                        self.warning = 0.0
-                    except rospy.ServiceException, e:
+                rospy.wait_for_service('/mavros/mission/set_current') # timeout ?
+                try:
+                    current_wpt = rospy.ServiceProxy('/mavros/mission/set_current', mavros_msgs.srv.WaypointSetCurrent)
+                    wpt = current_wpt(wp_seq = (self.last_waypoint))
+                    rospy.logwarn("Nouveau waypoint de correction :" + str(self.last_waypoint))
+                    self.warning = 0.0
+                except rospy.ServiceException, e:
                         rospy.logwarn("Erreur")
 
 
