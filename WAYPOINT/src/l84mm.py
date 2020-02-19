@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 #-*- coding: utf-8 -*-
 
+from tkinter.filedialog import * # pour les gestions de fichiers
+from tkinter import simpledialog
+
 def readL84Waypoints(filename):
 	l84 = open(filename,'rt')
 	n = -1
@@ -33,14 +36,13 @@ def writeMMWaypoints(filename,wpts):
 			f.write('%d\t0\t0\t16\t0\t0\t0\t0\t%.9f\t%.9f\t1.0\t1\r\n' % (k,w[0],w[1]))
 
 if __name__ == '__main__':
-	import os.path
-	import sys
+	initialdir_qinsy = "../sources/l84_qinsy/"
+	initialdir_waypoints = "../sources/waypoints/"
 
-	filename = "../sources/" + sys.argv[1]
-	basename = os.path.basename(filename)
-	dirname = os.path.dirname(filename)
-	if '.' in basename:
-		basename = basename.split('.')[0] + '.waypoints'
-	#
-	wpts = readL84Waypoints(filename)
-	writeMMWaypoints(os.path.join(dirname,basename),wpts)
+	TK = Tk()
+	file_name_in = askopenfilename(initialdir = initialdir_qinsy, title = "Choix du fichier l84 à convertir", filetypes = [ ('l84 files','.l84'),('all files','.*') ])
+	file_name_out = asksaveasfilename(initialdir = initialdir_waypoints, title = "Choisissez un nom de fichier waypoints pour l'enregistrement", filetypes = [('waypoints files','.waypoints'),('all files','.*')])
+	TK.destroy()
+
+	wpts = readL84Waypoints(file_name_in)
+	writeMMWaypoints(file_name_out,wpts)

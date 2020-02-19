@@ -1,5 +1,4 @@
-""" Classe qui permet d'adapter la trajectoire prise par la liste de waypoints pour obtenir une
-nouvelle liste de waypoints dont la trajectoire peut être suivi par Ulysse."""
+""" Classe qui représente la liste des waypoints au format QGC WPL 110."""
 
 # Import:
 from scipy import signal
@@ -91,11 +90,8 @@ class Waypoint:
             self.WP_out[i] = [long,lat,self.WP_out[i][1]]
 
     def write_file(self):
-        """
-        Sauvegarde les waypoints créés dans un fichier format txt.
-        """
-    	with open(self.file_name_out,'wt') as f:
-    		#f.write('QGC\tWPL\t110\r\n')
-    		f.write('QGC WPL 110\r\n')
-    		for k,w in enumerate(self.WP_out):
-    			f.write('%d\t0\t0\t16\t%d\t0\t0\t0\t%.9f\t%.9f\t1.0\t1\r\n' % (k,w[2],w[0],w[1]))
+        with open(self.file_name_out,'wt') as f:
+            #f.write('QGC\tWPL\t110\r\n')
+            f.write('QGC WPL 110\r\n')
+            for k,w in enumerate(self.WP_out):
+                f.write('%d\t0\t0\t16\t%d\t0\t0\t0\t%.9f\t%.9f\t1.0\t1\r\n' % (k,w[2],w[0],w[1]))
