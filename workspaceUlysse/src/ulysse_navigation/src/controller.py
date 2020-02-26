@@ -104,11 +104,10 @@ class Controller(object):
                     ligne = "Trav" + str(self.nbr_trav)
 
                 self.last_waypoint_dictionnary[ligne] = data.current_seq
-                print(self.last_waypoint_dictionnary)
                 self.nav_pub.publish(nav_msg)
 
         self.current_wp = data.current_seq
-        rospy.loginfo("dictionnaire : " + str(self.last_waypoint_dictionnary))
+        #rospy.loginfo("dictionnaire : " + str(self.last_waypoint_dictionnary))
 
         #---------Pubication des diagnostiques-----------
 
