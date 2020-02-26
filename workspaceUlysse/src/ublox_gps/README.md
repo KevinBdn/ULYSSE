@@ -28,7 +28,7 @@ Se lance avec `rosrun`:
 
 	$ rosrun ublox_gps ublox_manual_head_cumputing.py
 
-Lance le node `gps` qui donne le status du node (temps de calcul et cap calculé) dans le topic `/diagnostics`.
+Lance le node `gps` qui donne le status du node (temps de calcul et cap calculé) dans le topic `/diagnostics`. L'information du cap est également transmise dans le topic `/ulysse/navigation/cap`.
 
 ![](../../readme_resources/ublox_node.png)
 

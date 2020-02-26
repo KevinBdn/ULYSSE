@@ -44,6 +44,7 @@ import numpy as np
 import rospy
 import rospkg
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
+from std_msgs.msg import Float32
 
 from datetime import datetime
 
@@ -313,6 +314,7 @@ if __name__ == '__main__':
 #    print((HEADING_BIAS,COM_UBLOX_1,COM_UBLOX_2,UDP_IP,UDP_PORT,BD))
     rospy.init_node(BASENAME, anonymous=False, log_level=rospy.DEBUG)
     diag=rospy.Publisher("diagnostics",DiagnosticArray, queue_size=5)
+    cap_pub=rospy.Publisher("/ulysse/navigation/cap",Float32, queue_size=1)
 
     # Connect to serial ports
     port_ub1 = ublox_connection(COM_UBLOX_1)
@@ -405,6 +407,7 @@ if __name__ == '__main__':
             arr.status.append(DiagnosticStatus(level=0,name=DIAG_BASENAME+" Cap",message="{0:.2f}".format(compass_heading)))
             arr.header.stamp= rospy.Time.now()
             diag.publish(arr)
+            cap_pub.publish(Float32("{0:.2f}".format(compass_heading)))
 
         except:
             arr=DiagnosticArray()
