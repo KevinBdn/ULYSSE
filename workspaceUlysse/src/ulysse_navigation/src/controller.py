@@ -26,6 +26,10 @@ class Controller(object):
         self.last_waypoint_list = []
         self.warning_list = []
 
+        self.last_waypoint_dictionnary = {}
+        self.nbr_reg = 0 # Nombre de lignes traversières
+        self.nbr_trav = 0  # Nombre de lignes régulières
+
         self.battery_min = battery_min
         self.wp_enregistre  = 0
         self.wp_number = 0
@@ -64,6 +68,7 @@ class Controller(object):
 
         self.wp_number=len(data.waypoints)
         self.waypoints_list = data.waypoints
+
         #------------ Fin de ligne ----------------------
         if data.waypoints[data.current_seq].param1 == 1:
             if  data.waypoints[self.current_wp].param1 == 0:
@@ -90,11 +95,19 @@ class Controller(object):
                 nav_msg.key = "Start"
                 if data.waypoints[data.current_seq].param2 == 0:
                     nav_msg.value = "Reg"
+                    self.nbr_reg += 1
+                    ligne = "Reg" + str(self.nbr_reg)
+
                 else:
                     nav_msg.value = "Trav"
+                    self.nbr_trav += 1
+                    ligne = "Trav" + str(self.nbr_trav)
+
+                self.last_waypoint_dictionnary[ligne] = data.current_seq
                 self.nav_pub.publish(nav_msg)
 
         self.current_wp = data.current_seq
+        #rospy.loginfo("dictionnaire : " + str(self.last_waypoint_dictionnary))
 
         #---------Pubication des diagnostiques-----------
 
