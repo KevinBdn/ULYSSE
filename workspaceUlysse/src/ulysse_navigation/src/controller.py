@@ -1,5 +1,30 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
+
+"""
+__author__  = "Kevin Bedin, Clement Bichat, Aurelien Grenier"
+__version__ = "1.0.1"
+__date__    = "2020-01-20"
+__status__  = "Development"
+
+"""
+
+"""
+Contexte :
+        - Ulysse Unmaned Surface Vehicule
+        - Utilisation avec ROS et le package Mavros
+
+Objectif :
+        - Lors de la réception d'un warning sur le topic /warning ,une consigne
+          de waypoint est envoyé dans le service /mavros/mission/set_current
+          afin d'effectuer à nouveau la fauchée.
+        - Diagnostique
+
+Documentation :
+        - http://wiki.ros.org/mavros_msgs
+"""
+
+
 import rospy
 import rospkg
 from std_msgs.msg import Int16
@@ -8,8 +33,6 @@ from mavros_msgs.msg import WaypointList,State
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from mavros_msgs.msg import State
 from mavros_msgs.msg import WaypointList
-from battery import Battery
-from waypoints import Waypoint
 import mavros_msgs.srv
 import threading
 
@@ -42,6 +65,11 @@ class Controller(object):
         rospy.logwarn("Hello, création du noeud")
 
     def battery_callback(self,data):
+        """
+        Callback de lecture de la tension de la batterie
+        Entrée :
+            data : sensor_msgs BatteryState Message
+        """
         diagnostics=DiagnosticArray()
         diagnostics.status.append(DiagnosticStatus(level=(data.voltage<self.battery_min),name="controller/battery_level/Level", message="{0:.2f}".format(data.voltage)))
         diagnostics.header.stamp=rospy.Time.now()
@@ -51,6 +79,13 @@ class Controller(object):
         #more informations : http://docs.ros.org/melodic/api/sensor_msgs/html/msg/BatteryState.html
 
     def state_callback(self,data):
+        """
+        Callback de lecture de l'état du drone :
+            - Armed ou Disarmed et Mode (Hold, Manual, Loiter...)
+            - Publication de diagnostics
+        Entrée :
+            data : mavros_msgs State Message
+        """
         self.arming=data.armed*"Armed"+(1-data.armed)*"Disarmed"
         self.mode=data.mode
         diagnostics=DiagnosticArray()
@@ -61,6 +96,20 @@ class Controller(object):
 
 
     def waypoints_callback(self,data):
+        """
+        Callback appelé à chaque passage de waypoint : 
+            - Détection de début et fin de ligne + publication sur /navigation/line_status
+            - Enregistrement des waypoints de fin de lignes
+            - Enregistrement dans un dictionnaire à chaque nouvelle ligne de la type de ligne
+              et du numéro du premier waypoint
+            - Publication de diagnostics
+
+
+        Entrée :
+            data : mavros_msgs  Waypoint
+                  - data.waypoints : liste des waypoints de la mission
+                  - data.current_seq : waypoint courant
+        """
         #----- Callback appelé à chaque changement de waypoints
         #rospy.logwarn("Changement de waypoint")
         rospy.logwarn("Nouveau waypoint :" + str(data.current_seq))
@@ -120,7 +169,12 @@ class Controller(object):
 
 
     def warning_callback (self, data):
-        #-------- Callback lors de la réception d'un msg sur /warning
+        """
+        Callback appelé lors de la réception d'un msg sur /warning
+            - Appel des fonctions wpt_chang() et stop()
+        Entrée :
+            data : Int16
+        """
         self.warning = data.data
         rospy.logwarn("Warning, type" + str(self.warning))
         if (self.warning != -1):
@@ -135,8 +189,12 @@ class Controller(object):
 
 
     def wpt_chang(self):
-        #-------- Fonction qui envoie le nouveau wpt lors d'un warning sur le service /mavros/mission/set_current
-            #----- Mise à zéro de la variable warning
+        """
+        Fonction lors de la réception d'un warning publie la consigne du wpt de correction
+        sur le service /mavros/mission/set_current. Le wpt de correction est le dernier de la
+        ligne précedente.
+        Mise à zéro de la variable warning
+        """
 
 
         if self.waypoints_list[self.waypoint_warning].param1 == 0 :
@@ -165,7 +223,11 @@ class Controller(object):
 
 
     def stop(self):
-        #------ Fonction qui appelle le service /mavros/set_mode et met en mode Loiter Ulysse
+        """
+        Fonction lors de la réception d'un warning publie la consigne de mise en mode stationnaire
+        sur le service /mavros/set_mode.
+        """
+
         rospy.wait_for_service('/mavros/set_mode') # timeout ?
         try:
             mode = rospy.ServiceProxy('/mavros/set_mode', mavros_msgs.srv.SetMode)
@@ -179,7 +241,13 @@ class Controller(object):
               # custom_mode: 'HOLD'"
 
     def diagnostic_publisher(self):
-        #------ Publication des diagnostiques
+        """
+        Fonction de publication des diagnostiques :
+            - current_wpt
+            - Etat
+            - ...
+        Lancement dans un thread pour avoir une publication régulière
+        """
         diagnostics=DiagnosticArray()
         while not(rospy.is_shutdown()):
             diagnostics.status.append(DiagnosticStatus(level=0,name="controller/waypoints/Number", message=str(self.wp_number)))
