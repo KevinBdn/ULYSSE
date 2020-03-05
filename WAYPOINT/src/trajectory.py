@@ -1,5 +1,4 @@
-""" Classe qui permet de créer des waypoints intermédiaires pour lisser une
-trajectoire."""
+""" Classe qui permet de créer des waypoints intermédiaires pour lisser une trajectoire."""
 
 # Import:
 from math import *

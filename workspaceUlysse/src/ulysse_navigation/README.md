@@ -25,3 +25,20 @@ Se lance avec `rosrun`:
 
 ![](../../readme_resources/controller_node.png)
 
+## Topics et services utilisés :
+
+
+### Subscribers :
+
+* `/mavros/state` : état courant d'Ulysse (armed, mode, guided...)
+* `/mavros/battery` : état de la batterie
+* `/mavros/mission/waypoints` : liste des waypoints de la mission, waypoint courant.
+* `/warning` : alerte sur une mauvaise mesure
+
+### Publishers :
+* `/Diagnostics` : publication de l'état du drone sur le topics de diagnostics
+* `/navigation/line_status`: publication du type de ligne (traversière ou régulière) à chaque début de ligne.
+
+### Services :
+* `/mavros/mission/set_current` : service utilisé pour la publication du wpt du correction
+* `/mavros/set_mode` : service utilisé pour la publication de la mise en mode stationnaire

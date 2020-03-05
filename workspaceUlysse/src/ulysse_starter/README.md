@@ -105,5 +105,5 @@ En ce qui l'IMU, la configuration se fait dans le fichier yaml `config/example/s
 
 **Mavproxy** se lance en local sur le NUC d'Ulysse (sinon il faut changer la configuration dans les launchs). Pour ce faire il suffit de lancer la commande:
 ~~~~sh
-$ mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14551 
+$ mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14551 --out=tcpin:0.0.0.0:5762 --out=tcpin:0.0.0.0:5763 --out=tcpin:0.0.0.0:5764 --out=tcpin:0.0.0.0:5765
 ~~~~

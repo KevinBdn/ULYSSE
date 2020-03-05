@@ -18,7 +18,6 @@ Architecture de dossiers
 	ULYSSE
 		├── Bag_files
 		├── Documentation
-		├── Parser_WP
 		├── WAYPOINT
 		└── workspaceUlysse
 
@@ -32,9 +31,10 @@ Architecture de dossiers
 	* Quelques tutoriel (mavlink, sim_vehicle, ...)
 	* Quelques codes (decode de packet binaire R2Sonic en C, ...)
 
-* **Parser_WP/**: 
+* **WAYPOINT/**: 
 
 	* Code de conversion d'un fichier waypoint **Qinsy**  en fichier waypoint **Mavlink**.
+	* Permet l'adaptation de la trajectoire des waypoints éditer sur QInsy en une trajectoire plus simple à suivre pour Ulysse.
 
 * **workspaceUlysse/**: 
 
