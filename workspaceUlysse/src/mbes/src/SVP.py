@@ -161,6 +161,9 @@ def SVP_deviation_step(i0, Tf, offset, SVP, plot):
         for y in Y_list[0:-1]:
             plt.plot([-X_list[-1]-5,X_list[-1]+5],[y,y],'black')
         plt.legend(["Vector with SVP","Vector without SVP"])
+        plt.xlabel("Distance [m]")
+        plt.ylabel("Depth [m]")
+        plt.title("SVP correction")
 
 
     return (X_list,Y_list, T_list)
@@ -243,7 +246,7 @@ def SVP_deviation(i0, Tf, offset, SVP):
 
 if __name__=="__main__":
 
-    svp="../../RESOURCES/SVP/1_2020-02-03_14-59-35_Up.asvp"
+    svp="../RESOURCES/SVP/1_2020-02-03_14-59-35_Up.asvp"
     SVP= np.asarray(np.loadtxt(svp, delimiter=' ', skiprows = 1)).T#Profondeurs par rapport au bateau
     offset=3*pi/2#Representation du nuage des points
 

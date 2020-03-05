@@ -1,0 +1,81 @@
+path: Ulysse
+analyzers:
+    filters:
+        type: diagnostic_aggregator/AnalyzerGroup
+        path: Filters
+        analyzers:
+        #       Filter diagnostics
+            ssv_filter:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: SSV
+                find_and_remove_prefix: 'filters/ssv/'
+
+            coherence_filter:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: Coherence
+                find_and_remove_prefix: 'filters/coherence/'
+
+            covering_filter:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: Covering
+                find_and_remove_prefix: 'filters/covering/'
+
+            density_filter:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: Density
+                find_and_remove_prefix: 'filters/density/'
+
+            outlier_filter:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: Outlier
+                find_and_remove_prefix: 'filters/outlier/'
+
+            line_manger:
+                type: diagnostic_aggregator/GenericAnalyzer
+                path: Swath MANAGER
+                find_and_remove_prefix: 'filters/line_manager/'
+#    computing:
+#        type: diagnostic_aggregator/AnalyzerGroup
+#        path: Computing
+#        analyzers:
+#        #       Celerity diagnostics
+#            ssv:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: SSV
+#                find_and_remove_prefix: "SSV -"
+
+#        #       GPS diagnostics
+#            gps:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: GPS
+#                find_and_remove_prefix: "GPS -"
+
+#    mavros:
+#        type: diagnostic_aggregator/AnalyzerGroup
+#        path: Mavros
+#        analyzers:
+#            battery_mavros:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: Battery
+#                find_and_remove_prefix: "mavros: Battery"
+#            heartbeat:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: Heartbeat
+#                find_and_remove_prefix: "mavros: Heartbeat"
+#            fcu:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: FCU
+#                find_and_remove_prefix: "mavros: FCU connection"
+#            time_sync:
+#                type: diagnostic_aggregator/GenericAnalyzer
+#                path: Time Sync
+#                find_and_remove_prefix: "mavros: Time Sync"
+#            gps_mavlink:
+#                type: diagnostic_aggregator/DiscardAnalyzer
+#                path: GPS
+#                find_and_remove_prefix: "mavros: GPS"
+#            system:
+#                type: diagnostic_aggregator/DiscardAnalyzer
+#                path: System
+#                find_and_remove_prefix: "mavros: System"
+

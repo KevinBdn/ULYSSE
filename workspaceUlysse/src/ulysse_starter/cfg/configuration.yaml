@@ -1,4 +1,23 @@
 #########################
+#   LINE MANAGER FILE   #
+#########################
+
+quality_control/outlier/ratio: 0.04 #Pourcentage d'outliers autorises sur une ligne
+quality_control/outlier/packet_size: 100 #Taille des packets pour moindres carres
+quality_control/outlier/alpha: 2.3 #Seuil de rejet
+quality_control/outlier/warning: 2 # Numero de warning associe au controle des outliers
+
+
+#########################
+#        FILTERS        #
+#########################
+
+filters/ssv/threshold: 2 #Seuil de différence autorisée en m.s⁻¹ entre SSV mesuré et celle du SVP
+filters/ssv/warning: 8 # Numero de warning associe au controle de la SSV
+
+
+
+#########################
 #       SVP FILE        #
 #########################
 
@@ -33,9 +52,9 @@ celerity/server/port: 1040
 mbes_to_imu/T_x: 0.0205 # meters 
 mbes_to_imu/T_y: 0.2172 # meters
 mbes_to_imu/T_z: -0.1768 # meters
-mbes_to_imu/Q_x: 0. # Quaternion
-mbes_to_imu/Q_y: 0. # Quaternion
-mbes_to_imu/Q_z: 0. #Quaternion
+mbes_to_imu/Q_x: 0.020 # Quaternion
+mbes_to_imu/Q_y: -0.003 # Quaternion
+mbes_to_imu/Q_z: -0.017 # Quaternion
 mbes_to_imu/Q_w: 1 #Quaternion
 mbes_to_imu/frame_id: "imu" 
 mbes_to_imu/child_id: "mbes"

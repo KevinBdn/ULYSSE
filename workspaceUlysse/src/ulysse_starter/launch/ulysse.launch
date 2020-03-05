@@ -11,6 +11,8 @@
   <node pkg="ublox_gps" type="ublox_manual_head_cumputing.py" name="gps"/> 
   <node pkg="mbes" type="mbes_to_ros_from_socket.py" name="r2sonic"/> 
 
+    <include file="$(find ulysse_starter)/launch/filters.launch"/>
+
 <!--IMU-->
     <include file="$(find sbg_driver)/launch/examples/sbg_ekinox.launch"/>
 

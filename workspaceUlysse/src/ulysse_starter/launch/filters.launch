@@ -1,0 +1,11 @@
+<launch>
+
+  <rosparam command="load" file="$(find ulysse_starter)/cfg/configuration.yaml"/>
+
+  <node pkg="quality_control" type="line_manager.py" name="swath_manager"/>
+  <node pkg="quality_control" type="recouvrement.py" name="covering"/>
+  <node pkg="quality_control" type="coherence.py" name="coherence"/>
+  <node pkg="quality_control" type="densite.py" name="density"/>
+
+
+</launch>
