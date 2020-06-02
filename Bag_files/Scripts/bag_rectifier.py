@@ -10,7 +10,7 @@ with rosbag.Bag('Bag_rectified.bag', 'w') as outbag:
         # This also replaces tf timestamps under the assumption 
         # that all transforms in the message share the same timestamp
 
-
+        #Rajout des status des lignes au cours de l'acquisition
         if state == 0 and t.secs>1581006481:
             outbag.write("/ulysse/navigation/line_status", KeyValue("Start","Reg"), t)
             state+=1
@@ -36,19 +36,24 @@ with rosbag.Bag('Bag_rectified.bag', 'w') as outbag:
             outbag.write("/ulysse/navigation/line_status", KeyValue("End","Trav"), t)
             state+=1
 
-            
+        #Rajout SSV
         if topic == "/diagnostics":
             outbag.write(topic, msg, t)
             for data in msg.status:
                 if "SSV" in data.name:
                     outbag.write("/ulysse/ssv", Float32(float(data.message)), t)
+
+        #Correction du MBES
         if topic == "/ulysse/mbes/data":
             for pt in msg.points:
                 pt.x=pt.y
                 pt.y=0
             outbag.write(topic, msg, t)
+
         elif topic == "/sbg/ekf_quat" or topic=="/sbg/ekf_nav" or topic=="/sbg/utc_time":
             outbag.write(topic, msg, t)
+
+        #Correction du repère NED -> ENU
         elif topic == "/nav_odom":
             msg.pose.pose.orientation.z = msg.pose.pose.orientation.z* -1
             msg.pose.pose.orientation.x, msg.pose.pose.orientation.y = msg.pose.pose.orientation.y, msg.pose.pose.orientation.x
@@ -60,6 +65,8 @@ with rosbag.Bag('Bag_rectified.bag', 'w') as outbag:
 #                                 0,0,0,0,0.1,0,
 #                                 0,0,0,0,0,0.1]
             outbag.write(topic, msg, t)
+
+        #Correction du design
         elif topic =="/ulysse/design":
             msg.pose.position.x = -0.05
             msg.pose.position.y = 0.6

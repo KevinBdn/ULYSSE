@@ -1,6 +1,30 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+__author__  = "Pauline Celton"
+__version__ = "1.0.1"
+__date__    = "2019-03-02"
+__status__  = "Development"
+"""
+"""
+    The ``Quality control`` module
+    ======================
+    
+    Use it to :
+        - analyse the coherence of the swathes
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
+
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -11,10 +35,10 @@ import time
 import pandas
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
-RESOLUTION = 1
-SEUIL_COHERENCE = 0.1
-SEUIL_ACCEP = 10 # pourcentage d'erreurs acceptées
-WARNING = 12
+RESOLUTION = rospy.get_param('/filters/coherence/resolution', 1.) 
+SEUIL_COHERENCE = rospy.get_param('/filters/coherence/coherence_threshold', 0.1)
+SEUIL_ACCEP = rospy.get_param('/filters/coherence/acceptable_threshold', 10.) # pourcentage d'erreurs acceptées
+WARNING = rospy.get_param('/filters/coherence/warning', 12)
 
 
 def grille_coherence(reg_file,trav_file):

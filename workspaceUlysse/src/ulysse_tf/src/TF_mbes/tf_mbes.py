@@ -69,4 +69,4 @@ if __name__=="__main__":
 
     while not rospy.is_shutdown():
 #        boatSimulator(rospy.Time())
-        time.sleep(0.001)
+        time.sleep(0.01)

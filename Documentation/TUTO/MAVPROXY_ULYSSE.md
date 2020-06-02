@@ -27,10 +27,11 @@ Etapes
 
 * Sur la station de controle:
 
-	* Lancer mavproxy en se connectant à l'autopilot et en ouvrant deux ports UDP - un en local et un sur le NUC-17. Il est tout à fait envisageable d'ouvrir d'avantage de ports en indiquant l'IP de l'appareil destinataire ainsi qu'un nouveau port.
+	* Lancer mavproxy en se connectant à l'autopilot et en ouvrant deux ports UDP - un en local et un sur le NUC-17. Il est tout à fait envisageable d'ouvrir d'avantage de ports en indiquant l'IP de l'appareil destinataire ainsi qu'un nouveau port. Le `out=IP:PORT` ouvre une connexion UDP alors que `out=0.0.0.0:PORT` ouvre une connexion TCP. 
 	
 			$ mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14551 --out=10.0.1.111:14552
-		
+			
+
 	* Lancer roscore:
 	
 			$ roscore
@@ -71,7 +72,14 @@ On peut inversement lancer **MAVproxy** sur le NUC-17:
 
 	* Lancer MAVproxy:
 					
+			Sortie UDP:
+			
 			$ mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14551 --out=10.0.1.88:14552
+			
+			Sortie TCP:
+			
+			$ mavproxy.py --master=tcp:10.0.1.20:4003 --out=127.0.0.1:14551 --out=tcpin:0.0.0.0:5762 --out=tcpin:0.0.0.0:5763 --out=tcpin:0.0.0.0:5764 --out=tcpin:0.0.0.0:5765
+
 			
 	* Lancer roscore:
 	
@@ -113,6 +121,7 @@ On peut inversement lancer **MAVproxy** sur le NUC-17:
 	
 	* Lancer MAVROS:
 	
+
 			$ roslaunch mavros apm2.launch fcu_url:="udp://10.0.1.88:14552@14555"			
 		
 	OU 

@@ -1,6 +1,30 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+__author__  = "Ombeline Le Gall"
+__version__ = "1.0.1"
+__date__    = "2019-03-02"
+__status__  = "Development"
+"""
+"""
+    The ``Quality control`` module
+    ======================
+    
+    Use it to :
+        - analyse the swathes' covering
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
+
 # sudo apt-get install python-shaply
 
 import time
@@ -13,9 +37,10 @@ from shapely.geometry import Polygon
 from shapely.affinity import skew, rotate, scale
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
-TAUX_REC = 100   # recouvrement souhaite
-SEUIL_TOLERANCE = 5 # marge de tolerance entre resultat et ce qui etait attendu
-WARNING = 13
+
+TAUX_REC = rospy.get_param('/filters/covering/rate', 100.)    # recouvrement souhaite
+SEUIL_TOLERANCE = rospy.get_param('/filters/covering/tolerance', 5.) # marge de tolerance entre resultat et ce qui etait attendu
+WARNING = rospy.get_param('/filters/covering/warning', 13)
 
 
 def get_angle(data):

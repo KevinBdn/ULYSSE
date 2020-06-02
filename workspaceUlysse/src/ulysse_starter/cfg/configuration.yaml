@@ -12,9 +12,23 @@ quality_control/outlier/warning: 2 # Numero de warning associe au controle des o
 #        FILTERS        #
 #########################
 
-filters/ssv/threshold: 2 #Seuil de différence autorisée en m.s⁻¹ entre SSV mesuré et celle du SVP
+filters/ssv/threshold: 2. #Seuil de différence autorisée en m.s⁻¹ entre SSV mesuré et celle du SVP
 filters/ssv/warning: 8 # Numero de warning associe au controle de la SSV
 
+filters/coherence/warning: 12 # Numero de warning associe
+filters/coherence/acceptable_threshold: 10. # Pourcentage d'erreur acceptable
+filters/coherence/coherence_threshold: 0.1 # Seuil de cohérence
+filters/coherence/resolution: 1. #Résolution
+
+/filters/density/resolution: 0.8 # Résolution
+/filters/density/r2sonic_frequency: 400. # Frequence R2Sonic
+/filters/density/threshold: 0.95 # Pourcenta de densite acceptable
+/filters/density/density: 10. # nbr de sonde par maille voulue
+/filters/density/warning: 10 # Numero de warning associe
+
+/filters/covering/rate: 100. # recouvrement souhaite
+/filters/covering/tolerance: 5. # marge de tolerance entre resultat et ce qui etait attendu
+/filters/covering/warning: 13
 
 
 #########################

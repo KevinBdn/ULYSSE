@@ -47,12 +47,15 @@ Node ROS
 
 #### TF mbes
 
+** Remplacé par `static_transform_publisher` dans `ulysse_starter`**.
+
+
 Le node ROS de la TF du mbes se lance via `rosrun`:
 
 	rosrun ulysse_tf tf_mbes.py
 
 
-Le node lancé est `mbes_to_imu` qui publie dans la TF `mbes->imu` lorsque une nouvelles données arrivent sur le topic `/sbg/utc_time`.
+Le node lancé est `mbes_to_imu` qui publie dans la TF `mbes->imu` (bras de levier) lorsque une nouvelles données arrivent sur le topic `/sbg/utc_time`.
 
 ![](../../readme_resources/tf_mbes_node.png)
 

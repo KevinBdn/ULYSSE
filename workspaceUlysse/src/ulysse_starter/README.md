@@ -13,6 +13,7 @@ Architecture de dossiers
 	│   └── ulysse.rviz
 	└── launch
 	    ├── controller.launch
+	    ├── filters.launch
 	    ├── imu.launch
 	    ├── mbes.launch
 	    ├── rosbag_analyzer
@@ -34,6 +35,13 @@ Architecture de dossiers
 		* **diagnostic_aggregator**: avec la configuration du `/ulysse_starter/cfg/analyzers.yaml`
 		* **controller.py**:  Gestion de la navigation dont le retour sur zone. Voir [ulysse_navigation](../ulysse_navigation/README.md).
 		* **mavros**: Connexion sur le mavproxy
+
+	* **filter.launch**: Gestion du controle qualité
+		* **line_manager.py**:  Gestion des fauchées pour le controle qualité. Voir [quality_control](../quality_control/README.md).
+		* **recouvrement.py**:  Filtre de recouvrement. Voir [quality_control](../quality_control/README.md).
+		* **coherence.py**: Gestion de le cohérence. Voir [quality_control](../quality_control/README.md).
+		* **densite.py**:  Filtre de densité. Voir [quality_control](../quality_control/README.md).
+		* **celerite.py**:  Controle qualité de la SSV. Voir [quality_control](../quality_control/README.md).		
 		
 	* **imu.launch**: Gestion de l'IMU SBG ekinox
 		* **sbg_driver**: avec la configuration ekinox voir package `/sbg_ros_driver/config/example/ekinox.yaml`. Voir [sbg_driver](../sbg_ros_driver/README.md).
@@ -62,7 +70,7 @@ Architecture de dossiers
 		* **tf_starter.launch**: Lance toutes les TF nécessaires et le marker Ulysse. Voir [ulysse_tf](../ulysse_tf/README.md).
 		* **mavros**: Connexion sur le mavproxy
 		
-	* **xyz_saver.launch**: Lance les nodes nécessaire à la fabrication d'un fichier MNT.
+	* **xyz_saver.launch**: Lance les nodes nécessaires à la fabrication d'un fichier MNT.
 		* **mbes.launch**: Gestion du Multifaisceau R2Sonic2020. Voir ci dessus.
 		* **imu.launch**: Gestion de l'IMU SBG ekinox. Voir ci dessus.
 		* **xyz_saver.py**: Enregistrement du fichier MNT. Voir [mnt](../mnt/README.md).
@@ -77,6 +85,10 @@ Configuration d'Ulysse
 
 La configuration se fait via le fichier `cfg/configuration.yaml` du package `ulysse_starter` pour les éléments suivants:
 
+* **Controle qualité**
+	* Coefficient des différents filtres
+	* Numéro d'alerte associée
+	
 * **GPS**
 	* Port séries des ublox
 	* Serveur UDP

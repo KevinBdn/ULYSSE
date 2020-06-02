@@ -1,3 +1,27 @@
+"""
+__author__  = "Ombeline Le Gall"
+__version__ = "1.0.1"
+__date__    = "2019-03-02"
+__status__  = "Development"
+"""
+"""
+    The ``Quality control`` module
+    ======================
+    
+    Use it to :
+        - analyse the outlier data
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
+
 import os
 import pandas
 import numpy as np

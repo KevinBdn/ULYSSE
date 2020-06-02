@@ -6,6 +6,7 @@
   <node pkg="quality_control" type="recouvrement.py" name="covering"/>
   <node pkg="quality_control" type="coherence.py" name="coherence"/>
   <node pkg="quality_control" type="densite.py" name="density"/>
+  <node pkg="quality_control" type="celerite.py" name="celerity"/>
 
 
 </launch>

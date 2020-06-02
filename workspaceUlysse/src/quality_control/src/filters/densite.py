@@ -1,6 +1,29 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+__author__  = "Aurélie Panetier"
+__version__ = "1.0.1"
+__date__    = "2019-03-02"
+__status__  = "Development"
+"""
+"""
+    The ``Quality control`` module
+    ======================
+    
+    Use it to :
+        - analyse the density of the swathes
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
 
 import numpy as np
 import pandas as pd
@@ -12,11 +35,13 @@ from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
 
 # recuperer les lignes qui se recouvrent à partir de l'algorithme 
-RESOLUTION = 0.8
-DENSITE = 10 # nbr de sonde par maille voulue
-FREQUENCE_R2SONIC = 400
-SEUIL = 0.95 #Seuil de densite acceptable
-WARNING = 10
+
+RESOLUTION = rospy.get_param('/filters/density/resolution', 0.8)
+FREQUENCE_R2SONIC = rospy.get_param('/filters/density/r2sonic_frequency', 400)
+SEUIL = rospy.get_param('/filters/density/threshold', 0.95) #Seuil de densite acceptable
+DENSITE = rospy.get_param('/filters/density/density', 10.) # nbr de sonde par maille voulue
+WARNING = rospy.get_param('/filters/density/warning', 10)
+
 
 
 def density_filter(file_name):

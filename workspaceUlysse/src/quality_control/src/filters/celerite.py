@@ -1,6 +1,30 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+__author__  = "Aurélie Panetier - Pauline Celton"
+__version__ = "1.0.1"
+__date__    = "2019-03-02"
+__status__  = "Development"
+"""
+"""
+    The ``Quality control`` module
+    ======================
+    
+    Use it to :
+        - compare SSV with SVP
+    
+    Context
+    -------------------
+    Ulysse Unmaned Surface Vehicle
+    
+    Information
+    ------------------------
+    TODO :
+        - implementation in C++
+    
+"""
+
 import numpy as np
 import time
 import rospy
