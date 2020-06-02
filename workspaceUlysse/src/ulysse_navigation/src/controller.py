@@ -62,7 +62,6 @@ class Controller(object):
 
         self.arming="Disarmed" #Armed or Disarmed
         self.mode="HOLD" #HOLD, LOITER, AUTO, MANUAL
-        rospy.logwarn("Hello, création du noeud")
 
     def battery_callback(self,data):
         """
@@ -112,8 +111,8 @@ class Controller(object):
         """
         #----- Callback appelé à chaque changement de waypoints
         #rospy.logwarn("Changement de waypoint")
-        rospy.logwarn("Nouveau waypoint :" + str(data.current_seq))
-        rospy.logwarn("Liste des waypoints enregistrés" + str(self.last_waypoint_list))
+        rospy.loginfo("Nouveau waypoint :" + str(data.current_seq))
+        rospy.loginfo("Liste des waypoints enregistrés" + str(self.last_waypoint_list))
 
         self.wp_number=len(data.waypoints)
         self.waypoints_list = data.waypoints
@@ -123,8 +122,8 @@ class Controller(object):
             if  data.waypoints[self.current_wp].param1 == 0:
                 #------------- Enregistrement du dernier waypoint de la ligne
                 self.last_waypoint = self.current_wp
-                rospy.logwarn("Fin de ligne")
-                rospy.logwarn("Waypoint enregistré de fin de ligne "+str(self.last_waypoint))
+                rospy.loginfo("Fin de ligne")
+                rospy.loginfo("Waypoint enregistré de fin de ligne "+str(self.last_waypoint))
                 self.last_waypoint_list.append(self.last_waypoint)
 
 
@@ -139,7 +138,7 @@ class Controller(object):
         #----------Debut de ligne ----------------------
         elif data.waypoints[data.current_seq].param1 == 0:
             if  data.waypoints[self.current_wp].param1 == 1:
-                rospy.logwarn("Début de ligne")
+                rospy.loginfo("Début de ligne")
                 nav_msg = KeyValue()
                 nav_msg.key = "Start"
                 if data.waypoints[data.current_seq].param2 == 0:
@@ -216,7 +215,7 @@ class Controller(object):
         try:
             current_wpt = rospy.ServiceProxy('/mavros/mission/set_current', mavros_msgs.srv.WaypointSetCurrent)
             wpt = current_wpt(wp_seq = (self.wpt_correction))
-            rospy.logwarn("Nouveau waypoint de correction :" + str(self.wpt_correction))
+            rospy.loginfo("Nouveau waypoint de correction :" + str(self.wpt_correction))
             self.warning = 0.0
         except rospy.ServiceException, e:
                 rospy.logwarn("Erreur")
@@ -232,7 +231,7 @@ class Controller(object):
         try:
             mode = rospy.ServiceProxy('/mavros/set_mode', mavros_msgs.srv.SetMode)
             mode_ = mode(custom_mode = "HOLD")
-            rospy.logwarn("Mode HOLD activé")
+            rospy.loginfo("Mode HOLD activé")
             self.warning = 0.0
         except rospy.ServiceException, e:
             rospy.logwarn("Erreur")
